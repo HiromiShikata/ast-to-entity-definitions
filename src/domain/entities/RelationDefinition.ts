@@ -1,7 +1,7 @@
-import { EntityDefinitionObject } from './EntityDefinition';
+import { EntityDefinition } from './EntityDefinition';
 
 export type RelationDefinition = {
   name: string;
-  sourceEntityDefinitionName: EntityDefinitionObject['name'];
-  targetEntityDefinitionName: EntityDefinitionObject['name'];
+  sourceEntityDefinitionName: EntityDefinition['typeName'];
+  targetEntityDefinitionName: EntityDefinition['typeName'];
 };

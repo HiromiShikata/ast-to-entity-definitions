@@ -1,12 +1,7 @@
-export type EntityDefinition =
-  | EntityDefinitionPrimitive
-  | EntityDefinitionObject;
-
-export type EntityDefinitionPrimitive = {
-  name: 'string' | 'number' | 'boolean';
-  isPrimitive: true;
-};
-export type EntityDefinitionObject = {
-  name: string;
-  isPrimitive: false;
+export type EntityDefinition = {
+  typeName: string;
+  properties: {
+    name: string;
+    propertyType: string;
+  }[];
 };
