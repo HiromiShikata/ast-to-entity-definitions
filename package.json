@@ -2,13 +2,14 @@
   "name": "ast-to-entity-definitions",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "prettier": "prettier --write '**/*'",
     "lint": "eslint src",
     "lint-fix": "eslint src --fix",
     "format": "npm run prettier && npm run lint-fix",
     "build": "tsc",
+    "start": "node dist/index.js",
     "test": "jest"
   },
   "repository": {
