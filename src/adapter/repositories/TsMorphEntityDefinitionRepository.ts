@@ -1,8 +1,8 @@
 import * as ts from 'ts-morph';
-import {SyntaxKind} from 'ts-morph';
-import {readdirSync, statSync} from 'fs';
-import {EntityDefinition} from '../../domain/entities/EntityDefinition';
-import {EntityDefinitionRepository} from "../../domain/usecases/adapter-interfaces/EntityDefinitionRepository";
+import { SyntaxKind } from 'ts-morph';
+import { readdirSync, statSync } from 'fs';
+import { EntityDefinition } from '../../domain/entities/EntityDefinition';
+import { EntityDefinitionRepository } from '../../domain/usecases/adapter-interfaces/EntityDefinitionRepository';
 
 export class TsMorphEntityDefinitionRepository
   implements EntityDefinitionRepository
