@@ -10,7 +10,7 @@
     "format": "npm run prettier && npm run lint-fix",
     "build": "tsc",
     "start": "node dist/index.js",
-    "test": "jest"
+    "test": "jest ./src"
   },
   "repository": {
     "type": "git",
