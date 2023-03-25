@@ -21,9 +21,10 @@ jobs:
       - name: Build package
         run: npm run build
 
-      - run: npm version patch
+      - run: git config --global user.email "gh-actions"
+      - run: git config --global user.name "gh-actions"
 
-      - name: Publish package
-        run: npm publish
+      - run: npx semantic-release
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
+          NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+
