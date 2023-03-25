@@ -25,6 +25,8 @@ jobs:
       - run: git config --global user.name "gh-actions"
 
       - run: npx semantic-release
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 #      - run: npm version patch
 
 #      - uses: JS-DevTools/npm-publish@v1
