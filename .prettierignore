@@ -7,3 +7,5 @@
 .idea
 reports
 dist
+*.map
+.npmignore
