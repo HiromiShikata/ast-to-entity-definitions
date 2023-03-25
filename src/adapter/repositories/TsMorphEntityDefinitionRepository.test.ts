@@ -1,6 +1,6 @@
 import { TsMorphEntityDefinitionRepository } from './TsMorphEntityDefinitionRepository';
 
-describe('TsMorphTypeDefinitionAstRepository', () => {
+describe('TsMorphEntityDefinitionRepository', () => {
   let repository: TsMorphEntityDefinitionRepository;
 
   beforeEach(() => {
@@ -8,7 +8,7 @@ describe('TsMorphTypeDefinitionAstRepository', () => {
   });
 
   describe('find', () => {
-    it('should return an array of TypeDefinitionAst', async () => {
+    it('should return an array of EntityDefinition', async () => {
       const path = './testdata/src/domain/entities';
       const result = await repository.find(path);
 
