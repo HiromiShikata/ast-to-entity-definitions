@@ -31,7 +31,7 @@
       "@semantic-release/npm"
     ],
     "branches": [
-      "main"
+      "main","publish"
     ]
   },
   "homepage": "https://github.com/HiromiShikata/ast-to-entity-definitions#readme",
