@@ -9,3 +9,4 @@ reports
 dist
 *.map
 .npmignore
+CHANGELOG.md
