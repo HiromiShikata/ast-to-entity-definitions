@@ -15,16 +15,14 @@ export class GetDefinitionByPathUseCase {
 
     for (const entityDefinition of entityDefinitions) {
       for (const property of entityDefinition.properties) {
-        switch (property.propertyType) {
-          case 'string':
-          case 'number':
-          case 'boolean':
-            continue;
+        if (!property.isReference) {
+          continue;
         }
         relationDefinitions.push({
           name: property.name,
           sourceEntityDefinitionName: entityDefinition.typeName,
           targetEntityDefinitionName: property.propertyType,
+          isOneToOneRelationShop: property.isUnique,
         });
       }
     }
