@@ -28,25 +28,47 @@ describe('GetDefinitionByPathUseCase', () => {
           {
             typeName: 'User',
             properties: [
-              { name: 'id', propertyType: 'number' },
-              { name: 'name', propertyType: 'string' },
-              { name: 'email', propertyType: 'string' },
+              { name: 'id', propertyType: 'string', isReference: false },
+              { name: 'name', propertyType: 'string', isReference: false },
+              { name: 'email', propertyType: 'string', isReference: false },
             ],
           },
           {
             typeName: 'Group',
             properties: [
-              { name: 'id', propertyType: 'number' },
-              { name: 'name', propertyType: 'string' },
+              { name: 'id', propertyType: 'string', isReference: false },
+              { name: 'name', propertyType: 'string', isReference: false },
             ],
           },
-
           {
             typeName: 'UserGroup',
             properties: [
-              { name: 'id', propertyType: 'number' },
-              { name: 'userId', propertyType: 'User' },
-              { name: 'groupId', propertyType: 'Group' },
+              { name: 'id', propertyType: 'string', isReference: false },
+              {
+                name: 'userId',
+                propertyType: 'User',
+                isReference: true,
+                isUnique: false,
+              },
+              {
+                name: 'groupId',
+                propertyType: 'Group',
+                isReference: true,
+                isUnique: false,
+              },
+            ],
+          },
+          {
+            typeName: 'UserAddress',
+            properties: [
+              { name: 'id', propertyType: 'string', isReference: false },
+              {
+                name: 'userId',
+                propertyType: 'User',
+                isReference: true,
+                isUnique: true,
+              },
+              { name: 'address', propertyType: 'string', isReference: false },
             ],
           },
         ],
@@ -55,12 +77,19 @@ describe('GetDefinitionByPathUseCase', () => {
             name: 'userId',
             sourceEntityDefinitionName: 'UserGroup',
             targetEntityDefinitionName: 'User',
+            isOneToOneRelationShop: false,
           },
-
           {
             name: 'groupId',
             sourceEntityDefinitionName: 'UserGroup',
             targetEntityDefinitionName: 'Group',
+            isOneToOneRelationShop: false,
+          },
+          {
+            name: 'userId',
+            sourceEntityDefinitionName: 'UserAddress',
+            targetEntityDefinitionName: 'User',
+            isOneToOneRelationShop: true,
           },
         ],
       };
@@ -68,32 +97,54 @@ describe('GetDefinitionByPathUseCase', () => {
         {
           typeName: 'User',
           properties: [
-            { name: 'id', propertyType: 'number' },
-            { name: 'name', propertyType: 'string' },
-            { name: 'email', propertyType: 'string' },
+            { name: 'id', propertyType: 'string', isReference: false },
+            { name: 'name', propertyType: 'string', isReference: false },
+            { name: 'email', propertyType: 'string', isReference: false },
           ],
         },
         {
           typeName: 'Group',
           properties: [
-            { name: 'id', propertyType: 'number' },
-            { name: 'name', propertyType: 'string' },
+            { name: 'id', propertyType: 'string', isReference: false },
+            { name: 'name', propertyType: 'string', isReference: false },
           ],
         },
 
         {
           typeName: 'UserGroup',
           properties: [
-            { name: 'id', propertyType: 'number' },
-            { name: 'userId', propertyType: 'User' },
-            { name: 'groupId', propertyType: 'Group' },
+            { name: 'id', propertyType: 'string', isReference: false },
+            {
+              name: 'userId',
+              propertyType: 'User',
+              isReference: true,
+              isUnique: false,
+            },
+            {
+              name: 'groupId',
+              propertyType: 'Group',
+              isReference: true,
+              isUnique: false,
+            },
+          ],
+        },
+        {
+          typeName: 'UserAddress',
+          properties: [
+            { name: 'id', propertyType: 'string', isReference: false },
+            {
+              name: 'userId',
+              propertyType: `User`,
+              isReference: true,
+              isUnique: true,
+            },
+            { name: 'address', propertyType: 'string', isReference: false },
           ],
         },
       ];
       const { useCase, entityDefinitionRepository } =
         createUseCaseAndMockRepositories();
       entityDefinitionRepository.find.mockResolvedValueOnce(entityDefinitions);
-
       const result = await useCase.run(directoryPath);
 
       expect(result).toEqual(expectedDefinitions);
