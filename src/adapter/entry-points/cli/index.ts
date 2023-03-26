@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { Command } from 'commander';
 import { GetDefinitionByPathUseCase } from '../../../domain/usecases/GetDefinitionByPathUseCase';
 import { TsMorphEntityDefinitionRepository } from '../../repositories/TsMorphEntityDefinitionRepository';
