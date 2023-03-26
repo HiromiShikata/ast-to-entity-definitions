@@ -50,7 +50,9 @@
     "jest-junit": "^15.0.0",
     "prettier": "^2.8.7",
     "ts-jest": "^29.0.5",
-    "ts-morph": "^17.0.1",
     "typescript": "^5.0.2"
+  },
+  "dependencies": {
+    "ts-morph": "^17.0.1"
   }
 }
