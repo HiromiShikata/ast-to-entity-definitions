@@ -9,7 +9,7 @@
 ### Cli
 
 ```
-npx ast-to-entity-definitions -i ./src/domain/entities
+npx ast-to-entity-definitions ./src/domain/entities
 ```
 
 ### Function

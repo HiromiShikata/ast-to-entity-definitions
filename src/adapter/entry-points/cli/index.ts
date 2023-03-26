@@ -5,8 +5,11 @@ import { TsMorphEntityDefinitionRepository } from '../../repositories/TsMorphEnt
 
 const program = new Command();
 program
-  .command('get definition <path>')
-  .description('Get entity definitions and relation definitions')
+  .argument('<path>', 'Path of domain entity directory')
+  .name('Get entity definitions')
+  .description(
+    'Get entity definitions and relation definitions from types of TypeScript in src directory',
+  )
   .action(async (path: string) => {
     const useCase = new GetDefinitionByPathUseCase(
       new TsMorphEntityDefinitionRepository(),
