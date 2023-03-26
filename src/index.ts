@@ -14,3 +14,4 @@ program
     console.log(JSON.stringify(res));
   });
 program.parse(process.argv);
+export * from './adapter/entry-points';
