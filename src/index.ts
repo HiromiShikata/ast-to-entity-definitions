@@ -13,7 +13,7 @@ program
     const res = await useCase.run(path);
     console.log(JSON.stringify(res));
   });
-if(process.argv){
-    program.parse(process.argv);
+if (process.argv) {
+  program.parse(process.argv);
 }
 export * from './adapter/entry-points';
