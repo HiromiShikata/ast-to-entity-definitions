@@ -1,6 +1,6 @@
 import { Command } from 'commander';
-import { GetDefinitionByPathUseCase } from './domain/usecases/GetDefinitionByPathUseCase';
-import { TsMorphEntityDefinitionRepository } from './adapter/repositories/TsMorphEntityDefinitionRepository';
+import { GetDefinitionByPathUseCase } from '../../../domain/usecases/GetDefinitionByPathUseCase';
+import { TsMorphEntityDefinitionRepository } from '../../repositories/TsMorphEntityDefinitionRepository';
 
 const program = new Command();
 program
@@ -16,4 +16,3 @@ program
 if (process.argv) {
   program.parse(process.argv);
 }
-export * from './adapter/entry-points';
