@@ -33,7 +33,9 @@ export class TsMorphEntityDefinitionRepository
 
     const typeDeclarations = this.project
       .getSourceFiles()
-      .flatMap((sourceFile) => sourceFile.getTypeAliases());
+      .flatMap((sourceFile) => {
+        return [...sourceFile.getTypeAliases(), ...sourceFile.getInterfaces()];
+      });
 
     const typeDefinitionAsts = typeDeclarations
       .filter((t) => t.getType().isObject())

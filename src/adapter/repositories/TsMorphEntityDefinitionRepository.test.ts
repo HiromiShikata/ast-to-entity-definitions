@@ -45,6 +45,23 @@ describe('TsMorphEntityDefinitionRepository', () => {
               name: 'name',
               propertyType: 'string',
             },
+          ],
+          typeName: 'Item',
+        },
+        {
+          properties: [
+            {
+              isNullable: false,
+              isReference: false,
+              name: 'id',
+              propertyType: 'string',
+            },
+            {
+              isNullable: false,
+              isReference: false,
+              name: 'name',
+              propertyType: 'string',
+            },
             {
               isNullable: false,
               isReference: false,

@@ -26,6 +26,23 @@ describe('commander program', () => {
           ],
         },
         {
+          typeName: 'Item',
+          properties: [
+            {
+              isReference: false,
+              name: 'id',
+              propertyType: 'string',
+              isNullable: false,
+            },
+            {
+              isReference: false,
+              name: 'name',
+              propertyType: 'string',
+              isNullable: false,
+            },
+          ],
+        },
+        {
           typeName: 'User',
           properties: [
             {
