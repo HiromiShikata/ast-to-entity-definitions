@@ -51,6 +51,12 @@ describe('TsMorphEntityDefinitionRepository', () => {
               name: 'deactivated',
               propertyType: 'boolean',
             },
+            {
+              isNullable: false,
+              isReference: false,
+              name: 'createdAt',
+              propertyType: 'Date',
+            },
           ],
           typeName: 'User',
         },

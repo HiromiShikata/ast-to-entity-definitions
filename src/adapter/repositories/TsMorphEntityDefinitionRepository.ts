@@ -53,7 +53,7 @@ export class TsMorphEntityDefinitionRepository
                 SyntaxKind.TypeReference,
               )[0] || null;
             const nullable = this.isNullable(valueDeclaration);
-            if (!ref) {
+            if (!ref || ref.getText() === 'Date') {
               const propertyType = this.decideTypeForPrimitive(
                 valueDeclaration.getType(),
               );
