@@ -1,4 +1,6 @@
 import { TsMorphEntityDefinitionRepository } from './TsMorphEntityDefinitionRepository';
+import * as ts from 'ts-morph';
+import { Node } from 'ts-morph';
 
 describe('TsMorphEntityDefinitionRepository', () => {
   let repository: TsMorphEntityDefinitionRepository;
@@ -6,102 +8,204 @@ describe('TsMorphEntityDefinitionRepository', () => {
   beforeEach(() => {
     repository = new TsMorphEntityDefinitionRepository();
   });
-
   describe('find', () => {
     it('should return an array of EntityDefinition', async () => {
       const path = './testdata/src/domain/entities';
       const result = await repository.find(path);
 
-      expect(Array.isArray(result)).toBe(true);
-      expect(result.length).toBe(4);
-
-      const typeNames = result.map((item) => item.typeName);
-      expect(typeNames).toContain('User');
-      expect(typeNames).toContain('Group');
-      expect(typeNames).toContain('UserGroup');
-      expect(typeNames).toContain('UserAddress');
-
-      result.forEach((item) => {
-        expect(Array.isArray(item.properties)).toBe(true);
-        item.properties.forEach((property) => {
-          expect(typeof property.name).toBe('string');
-          expect(typeof property.propertyType).toBe('string');
-        });
-      });
-
-      const userTypeDef = result.find((item) => item.typeName === 'User');
-      expect(userTypeDef).toBeDefined();
-      expect(userTypeDef?.properties).toContainEqual({
-        name: 'id',
-        propertyType: 'string',
-        isReference: false,
-      });
-      expect(userTypeDef?.properties).toContainEqual({
-        name: 'name',
-        propertyType: 'string',
-        isReference: false,
-      });
-      expect(userTypeDef?.properties).toContainEqual({
-        name: 'deactivated',
-        propertyType: 'boolean',
-        isReference: false,
-      });
-
-      const groupTypeDef = result.find((item) => item.typeName === 'Group');
-      expect(groupTypeDef).toBeDefined();
-      expect(groupTypeDef?.properties).toContainEqual({
-        name: 'id',
-        propertyType: 'string',
-        isReference: false,
-      });
-      expect(groupTypeDef?.properties).toContainEqual({
-        name: 'name',
-        propertyType: 'string',
-        isReference: false,
-      });
-
-      const userGroupTypeDef = result.find(
-        (item) => item.typeName === 'UserGroup',
+      expect(result).toEqual([
+        {
+          properties: [
+            {
+              isNullable: false,
+              isReference: false,
+              name: 'id',
+              propertyType: 'string',
+            },
+            {
+              isNullable: false,
+              isReference: false,
+              name: 'name',
+              propertyType: 'string',
+            },
+          ],
+          typeName: 'Group',
+        },
+        {
+          properties: [
+            {
+              isNullable: false,
+              isReference: false,
+              name: 'id',
+              propertyType: 'string',
+            },
+            {
+              isNullable: false,
+              isReference: false,
+              name: 'name',
+              propertyType: 'string',
+            },
+            {
+              isNullable: false,
+              isReference: false,
+              name: 'deactivated',
+              propertyType: 'boolean',
+            },
+          ],
+          typeName: 'User',
+        },
+        {
+          properties: [
+            {
+              isNullable: false,
+              isReference: false,
+              name: 'id',
+              propertyType: 'string',
+            },
+            {
+              isNullable: false,
+              isReference: true,
+              isUnique: true,
+              name: 'userId',
+              propertyType: 'User',
+            },
+            {
+              isNullable: false,
+              isReference: false,
+              name: 'address',
+              propertyType: 'string',
+            },
+            {
+              isNullable: false,
+              isReference: false,
+              name: 'stringLiteral',
+              propertyType: 'string',
+            },
+            {
+              isNullable: false,
+              isReference: false,
+              name: 'numberLiteral',
+              propertyType: 'number',
+            },
+            {
+              isNullable: false,
+              isReference: false,
+              name: 'booleanLiteral',
+              propertyType: 'boolean',
+            },
+            {
+              isNullable: true,
+              isReference: false,
+              name: 'nullableWithNullUnion',
+              propertyType: 'string',
+            },
+            {
+              isNullable: true,
+              isReference: false,
+              name: 'nullableWithUndefined',
+              propertyType: 'string',
+            },
+            {
+              isNullable: true,
+              isReference: false,
+              name: 'nullableWithQuestionMark',
+              propertyType: 'string',
+            },
+            {
+              isNullable: true,
+              isReference: false,
+              name: 'unionLiteralsWithSameTypeNullable',
+              propertyType: 'string',
+            },
+            {
+              isNullable: true,
+              isReference: false,
+              name: 'unionLiteralsWithSameTypeQuestionMark',
+              propertyType: 'string',
+            },
+            {
+              isNullable: false,
+              isReference: false,
+              name: 'unionLiteralsWithSameType',
+              propertyType: 'string',
+            },
+          ],
+          typeName: 'UserAddress',
+        },
+        {
+          properties: [
+            {
+              isNullable: false,
+              isReference: false,
+              name: 'id',
+              propertyType: 'string',
+            },
+            {
+              isNullable: false,
+              isReference: true,
+              isUnique: false,
+              name: 'userId',
+              propertyType: 'User',
+            },
+            {
+              isNullable: false,
+              isReference: true,
+              isUnique: false,
+              name: 'groupId',
+              propertyType: 'Group',
+            },
+          ],
+          typeName: 'UserGroup',
+        },
+      ]);
+    });
+  });
+  describe('isNullable', () => {
+    it('success', async () => {
+      const project = new ts.Project();
+      project.addSourceFileAtPath(
+        './testdata/src/domain/entities/UserAddress.ts',
       );
-      expect(userGroupTypeDef).toBeDefined();
-      expect(userGroupTypeDef?.properties).toContainEqual({
-        name: 'id',
-        propertyType: 'string',
-        isReference: false,
-      });
-      expect(userGroupTypeDef?.properties).toContainEqual({
-        name: 'userId',
-        propertyType: 'User',
-        isReference: true,
-        isUnique: false,
-      });
-      expect(userGroupTypeDef?.properties).toContainEqual({
-        name: 'groupId',
-        propertyType: 'Group',
-        isReference: true,
-        isUnique: false,
-      });
+      const userAddressType = project
+        .getSourceFiles()
+        .flatMap((s) => s.getTypeAliases())[0]
+        .getType();
+      userAddressType.getPropertyOrThrow('id');
 
-      const userAddressTypeDef = result.find(
-        (item) => item.typeName === 'UserAddress',
-      );
-      expect(userAddressTypeDef).toBeDefined();
-      expect(userAddressTypeDef?.properties).toContainEqual({
-        name: 'id',
-        propertyType: 'string',
-        isReference: false,
-      });
-      expect(userAddressTypeDef?.properties).toContainEqual({
-        name: 'userId',
-        propertyType: `User`,
-        isUnique: true,
-        isReference: true,
-      });
-      expect(userAddressTypeDef?.properties).toContainEqual({
-        name: 'address',
-        propertyType: 'string',
-        isReference: false,
-      });
+      const getPropertyType = (name: string): Node => {
+        const property = userAddressType.getPropertyOrThrow(name);
+        const valueDeclaration = property.getValueDeclaration();
+        if (!valueDeclaration) {
+          throw new Error(`valueDeclaration is undefined.`);
+        }
+        return valueDeclaration;
+      };
+
+      expect(repository.isNullable(getPropertyType('id'))).toEqual(false);
+      expect(
+        repository.isNullable(getPropertyType('nullableWithNullUnion')),
+      ).toEqual(true);
+      expect(
+        repository.isNullable(getPropertyType('nullableWithUndefined')),
+      ).toEqual(true);
+      expect(
+        repository.isNullable(getPropertyType('nullableWithQuestionMark')),
+      ).toEqual(true);
+      expect(
+        repository.isNullable(
+          getPropertyType('unionLiteralsWithSameTypeNullable'),
+        ),
+      ).toEqual(true);
+
+      expect(
+        repository.isNullable(
+          getPropertyType('unionLiteralsWithSameTypeQuestionMark'),
+        ),
+      ).toEqual(true);
+
+      expect(
+        repository.isNullable(getPropertyType('unionLiteralsWithSameType')),
+      ).toEqual(false);
     });
   });
 });

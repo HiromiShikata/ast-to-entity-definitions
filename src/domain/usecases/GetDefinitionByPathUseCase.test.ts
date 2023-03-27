@@ -23,47 +23,90 @@ describe('GetDefinitionByPathUseCase', () => {
         {
           typeName: 'User',
           properties: [
-            { name: 'id', propertyType: 'string', isReference: false },
-            { name: 'name', propertyType: 'string', isReference: false },
-            { name: 'email', propertyType: 'string', isReference: false },
+            {
+              name: 'id',
+              propertyType: 'string',
+              isReference: false,
+              isNullable: false,
+            },
+            {
+              name: 'name',
+              propertyType: 'string',
+              isReference: false,
+              isNullable: false,
+            },
+            {
+              name: 'email',
+              propertyType: 'string',
+              isReference: false,
+              isNullable: false,
+            },
           ],
         },
         {
           typeName: 'Group',
           properties: [
-            { name: 'id', propertyType: 'string', isReference: false },
-            { name: 'name', propertyType: 'string', isReference: false },
+            {
+              name: 'id',
+              propertyType: 'string',
+              isReference: false,
+              isNullable: false,
+            },
+            {
+              name: 'name',
+              propertyType: 'string',
+              isReference: false,
+              isNullable: false,
+            },
           ],
         },
         {
           typeName: 'UserGroup',
           properties: [
-            { name: 'id', propertyType: 'string', isReference: false },
+            {
+              name: 'id',
+              propertyType: 'string',
+              isReference: false,
+              isNullable: false,
+            },
             {
               name: 'userId',
               propertyType: 'User',
               isReference: true,
               isUnique: false,
+              isNullable: false,
             },
             {
               name: 'groupId',
               propertyType: 'Group',
               isReference: true,
               isUnique: false,
+              isNullable: false,
             },
           ],
         },
         {
           typeName: 'UserAddress',
           properties: [
-            { name: 'id', propertyType: 'string', isReference: false },
+            {
+              name: 'id',
+              propertyType: 'string',
+              isReference: false,
+              isNullable: false,
+            },
             {
               name: 'userId',
               propertyType: 'User',
               isReference: true,
               isUnique: true,
+              isNullable: false,
             },
-            { name: 'address', propertyType: 'string', isReference: false },
+            {
+              name: 'address',
+              propertyType: 'string',
+              isReference: false,
+              isNullable: false,
+            },
           ],
         },
       ];
@@ -72,48 +115,90 @@ describe('GetDefinitionByPathUseCase', () => {
         {
           typeName: 'User',
           properties: [
-            { name: 'id', propertyType: 'string', isReference: false },
-            { name: 'name', propertyType: 'string', isReference: false },
-            { name: 'email', propertyType: 'string', isReference: false },
+            {
+              name: 'id',
+              propertyType: 'string',
+              isReference: false,
+              isNullable: false,
+            },
+            {
+              name: 'name',
+              propertyType: 'string',
+              isReference: false,
+              isNullable: false,
+            },
+            {
+              name: 'email',
+              propertyType: 'string',
+              isReference: false,
+              isNullable: false,
+            },
           ],
         },
         {
           typeName: 'Group',
           properties: [
-            { name: 'id', propertyType: 'string', isReference: false },
-            { name: 'name', propertyType: 'string', isReference: false },
+            {
+              name: 'id',
+              propertyType: 'string',
+              isReference: false,
+              isNullable: false,
+            },
+            {
+              name: 'name',
+              propertyType: 'string',
+              isReference: false,
+              isNullable: false,
+            },
           ],
         },
-
         {
           typeName: 'UserGroup',
           properties: [
-            { name: 'id', propertyType: 'string', isReference: false },
+            {
+              name: 'id',
+              propertyType: 'string',
+              isReference: false,
+              isNullable: false,
+            },
             {
               name: 'userId',
               propertyType: 'User',
               isReference: true,
               isUnique: false,
+              isNullable: false,
             },
             {
               name: 'groupId',
               propertyType: 'Group',
               isReference: true,
               isUnique: false,
+              isNullable: false,
             },
           ],
         },
         {
           typeName: 'UserAddress',
           properties: [
-            { name: 'id', propertyType: 'string', isReference: false },
+            {
+              name: 'id',
+              propertyType: 'string',
+              isReference: false,
+              isNullable: false,
+            },
             {
               name: 'userId',
               propertyType: `User`,
               isReference: true,
               isUnique: true,
+              isNullable: false,
             },
-            { name: 'address', propertyType: 'string', isReference: false },
+            {
+              name: 'address',
+              propertyType: 'string',
+              isReference: false,
+              isNullable: false,
+            },
           ],
         },
       ];
