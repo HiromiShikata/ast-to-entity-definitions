@@ -56,6 +56,6 @@
   },
   "dependencies": {
     "commander": "^10.0.0",
-    "ts-morph": "^17.0.1"
+    "ts-morph": "^18.0.0"
   }
 }
