@@ -15,6 +15,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
 
       expect(result).toEqual([
         {
+          name: 'Group',
           properties: [
             {
               isNullable: false,
@@ -29,9 +30,9 @@ describe('TsMorphEntityDefinitionRepository', () => {
               propertyType: 'string',
             },
           ],
-          typeName: 'Group',
         },
         {
+          name: 'Item',
           properties: [
             {
               isNullable: false,
@@ -46,9 +47,9 @@ describe('TsMorphEntityDefinitionRepository', () => {
               propertyType: 'string',
             },
           ],
-          typeName: 'Item',
         },
         {
+          name: 'User',
           properties: [
             {
               isNullable: false,
@@ -75,9 +76,9 @@ describe('TsMorphEntityDefinitionRepository', () => {
               propertyType: 'Date',
             },
           ],
-          typeName: 'User',
         },
         {
+          name: 'UserAddress',
           properties: [
             {
               isNullable: false,
@@ -90,7 +91,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
               isReference: true,
               isUnique: true,
               name: 'userId',
-              propertyType: 'User',
+              targetEntityDefinitionName: 'User',
             },
             {
               isNullable: false,
@@ -153,9 +154,9 @@ describe('TsMorphEntityDefinitionRepository', () => {
               propertyType: 'string',
             },
           ],
-          typeName: 'UserAddress',
         },
         {
+          name: 'UserGroup',
           properties: [
             {
               isNullable: false,
@@ -168,17 +169,16 @@ describe('TsMorphEntityDefinitionRepository', () => {
               isReference: true,
               isUnique: false,
               name: 'userId',
-              propertyType: 'User',
+              targetEntityDefinitionName: 'User',
             },
             {
               isNullable: false,
               isReference: true,
               isUnique: false,
               name: 'groupId',
-              propertyType: 'Group',
+              targetEntityDefinitionName: 'Group',
             },
           ],
-          typeName: 'UserGroup',
         },
       ]);
     });

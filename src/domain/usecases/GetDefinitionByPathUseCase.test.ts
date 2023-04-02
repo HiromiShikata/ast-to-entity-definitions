@@ -71,14 +71,14 @@ describe('GetDefinitionByPathUseCase', () => {
             },
             {
               name: 'userId',
-              propertyType: 'User',
+              targetEntityDefinitionName: 'User',
               isReference: true,
               isUnique: false,
               isNullable: false,
             },
             {
               name: 'groupId',
-              propertyType: 'Group',
+              targetEntityDefinitionName: 'Group',
               isReference: true,
               isUnique: false,
               isNullable: false,
@@ -96,7 +96,7 @@ describe('GetDefinitionByPathUseCase', () => {
             },
             {
               name: 'userId',
-              propertyType: 'User',
+              targetEntityDefinitionName: 'User',
               isReference: true,
               isUnique: true,
               isNullable: false,
@@ -163,14 +163,14 @@ describe('GetDefinitionByPathUseCase', () => {
             },
             {
               name: 'userId',
-              propertyType: 'User',
+              targetEntityDefinitionName: 'User',
               isReference: true,
               isUnique: false,
               isNullable: false,
             },
             {
               name: 'groupId',
-              propertyType: 'Group',
+              targetEntityDefinitionName: 'Group',
               isReference: true,
               isUnique: false,
               isNullable: false,
@@ -188,7 +188,7 @@ describe('GetDefinitionByPathUseCase', () => {
             },
             {
               name: 'userId',
-              propertyType: `User`,
+              targetEntityDefinitionName: `User`,
               isReference: true,
               isUnique: true,
               isNullable: false,

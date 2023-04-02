@@ -11,7 +11,7 @@ export type EntityPropertyDefinitionPrimitive = {
 export type EntityPropertyDefinitionReferencedObject = {
   isReference: true;
   name: string;
-  propertyType: string;
+  targetEntityDefinitionName: string;
   isUnique: boolean;
   isNullable: boolean;
 };

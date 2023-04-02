@@ -9,7 +9,7 @@ describe('commander program', () => {
     expect(output.trim()).toBe(
       JSON.stringify([
         {
-          typeName: 'Group',
+          name: 'Group',
           properties: [
             {
               isReference: false,
@@ -26,7 +26,7 @@ describe('commander program', () => {
           ],
         },
         {
-          typeName: 'Item',
+          name: 'Item',
           properties: [
             {
               isReference: false,
@@ -43,7 +43,7 @@ describe('commander program', () => {
           ],
         },
         {
-          typeName: 'User',
+          name: 'User',
           properties: [
             {
               isReference: false,
@@ -72,7 +72,7 @@ describe('commander program', () => {
           ],
         },
         {
-          typeName: 'UserAddress',
+          name: 'UserAddress',
           properties: [
             {
               isReference: false,
@@ -83,7 +83,7 @@ describe('commander program', () => {
             {
               isReference: true,
               name: 'userId',
-              propertyType: 'User',
+              targetEntityDefinitionName: 'User',
               isUnique: true,
               isNullable: false,
             },
@@ -150,7 +150,7 @@ describe('commander program', () => {
           ],
         },
         {
-          typeName: 'UserGroup',
+          name: 'UserGroup',
           properties: [
             {
               isReference: false,
@@ -161,14 +161,14 @@ describe('commander program', () => {
             {
               isReference: true,
               name: 'userId',
-              propertyType: 'User',
+              targetEntityDefinitionName: 'User',
               isUnique: false,
               isNullable: false,
             },
             {
               isReference: true,
               name: 'groupId',
-              propertyType: 'Group',
+              targetEntityDefinitionName: 'Group',
               isUnique: false,
               isNullable: false,
             },

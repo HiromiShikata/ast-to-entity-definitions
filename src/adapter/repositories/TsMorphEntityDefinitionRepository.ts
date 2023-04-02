@@ -82,8 +82,8 @@ export class TsMorphEntityDefinitionRepository
               : ref.getText();
             return {
               isReference: true,
-              propertyType,
               name: proreptyName,
+              targetEntityDefinitionName: propertyType,
               isUnique,
               isNullable: nullable,
             };
