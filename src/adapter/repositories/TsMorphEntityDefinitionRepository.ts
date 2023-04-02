@@ -40,12 +40,12 @@ export class TsMorphEntityDefinitionRepository
     const typeDefinitionAsts = typeDeclarations
       .filter((t) => t.getType().isObject())
       .map((typeDeclaration) => {
-        const typeName = typeDeclaration.getName();
+        const entityName = typeDeclaration.getName();
         const properties: EntityPropertyDefinition[] = typeDeclaration
           .getType()
           .getProperties()
           .map((property): EntityPropertyDefinition | null => {
-            const name = property.getName();
+            const proreptyName = property.getName();
             const valueDeclaration = property.getValueDeclaration();
             if (!valueDeclaration) {
               return null;
@@ -63,12 +63,12 @@ export class TsMorphEntityDefinitionRepository
                 throw new Error(
                   `unexpected type: ${valueDeclaration
                     .getType()
-                    .getText()}, propertyName: ${name}, typeName: ${typeName}`,
+                    .getText()}, propertyName: ${proreptyName}, entityName: ${entityName}`,
                 );
               }
               return {
                 isReference: false,
-                name,
+                name: proreptyName,
                 propertyType,
                 isNullable: nullable,
               };
@@ -82,14 +82,14 @@ export class TsMorphEntityDefinitionRepository
               : ref.getText();
             return {
               isReference: true,
-              name,
               propertyType,
+              name: proreptyName,
               isUnique,
               isNullable: nullable,
             };
           })
           .filter((item): item is EntityPropertyDefinition => item !== null);
-        return { typeName, properties };
+        return { name: entityName, properties };
       });
 
     return typeDefinitionAsts;

@@ -21,7 +21,7 @@ describe('GetDefinitionByPathUseCase', () => {
       const directoryPath = '/example/directory/path';
       const expectedEntityDefinitions: EntityDefinition[] = [
         {
-          typeName: 'User',
+          name: 'User',
           properties: [
             {
               name: 'id',
@@ -44,7 +44,7 @@ describe('GetDefinitionByPathUseCase', () => {
           ],
         },
         {
-          typeName: 'Group',
+          name: 'Group',
           properties: [
             {
               name: 'id',
@@ -61,7 +61,7 @@ describe('GetDefinitionByPathUseCase', () => {
           ],
         },
         {
-          typeName: 'UserGroup',
+          name: 'UserGroup',
           properties: [
             {
               name: 'id',
@@ -86,7 +86,7 @@ describe('GetDefinitionByPathUseCase', () => {
           ],
         },
         {
-          typeName: 'UserAddress',
+          name: 'UserAddress',
           properties: [
             {
               name: 'id',
@@ -113,7 +113,7 @@ describe('GetDefinitionByPathUseCase', () => {
 
       const entityDefinitions: EntityDefinition[] = [
         {
-          typeName: 'User',
+          name: 'User',
           properties: [
             {
               name: 'id',
@@ -136,7 +136,7 @@ describe('GetDefinitionByPathUseCase', () => {
           ],
         },
         {
-          typeName: 'Group',
+          name: 'Group',
           properties: [
             {
               name: 'id',
@@ -153,7 +153,7 @@ describe('GetDefinitionByPathUseCase', () => {
           ],
         },
         {
-          typeName: 'UserGroup',
+          name: 'UserGroup',
           properties: [
             {
               name: 'id',
@@ -178,7 +178,7 @@ describe('GetDefinitionByPathUseCase', () => {
           ],
         },
         {
-          typeName: 'UserAddress',
+          name: 'UserAddress',
           properties: [
             {
               name: 'id',
