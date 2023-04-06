@@ -33,7 +33,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
               propertyType: 'string',
             },
             {
-              acceptableValues: ['"Sports"', '"Music"', '"Movies"'],
+              acceptableValues: ['Sports', 'Music', 'Movies'],
               isNullable: false,
               isReference: false,
               name: 'category',
@@ -160,21 +160,21 @@ describe('TsMorphEntityDefinitionRepository', () => {
               propertyType: 'string',
             },
             {
-              acceptableValues: ['"dog"', '"cat"'],
+              acceptableValues: ['dog', 'cat'],
               isNullable: true,
               isReference: false,
               name: 'unionLiteralsWithSameTypeNullable',
               propertyType: 'string',
             },
             {
-              acceptableValues: ['"dog"', '"cat"'],
+              acceptableValues: ['dog', 'cat'],
               isNullable: true,
               isReference: false,
               name: 'unionLiteralsWithSameTypeQuestionMark',
               propertyType: 'string',
             },
             {
-              acceptableValues: ['"dog"', '"cat"'],
+              acceptableValues: ['dog', 'cat'],
               isNullable: false,
               isReference: false,
               name: 'unionLiteralsWithSameType',

@@ -107,7 +107,7 @@ export class TsMorphEntityDefinitionRepository
     return type
       .getUnionTypes()
       .filter((t) => !t.isNull() && !t.isUndefined() && t.isLiteral())
-      .map((t) => t.getText());
+      .map((t) => t.getText().replace(/"/g, ''));
   };
 
   isNullable = (valueDeclaration: Node): boolean => {
