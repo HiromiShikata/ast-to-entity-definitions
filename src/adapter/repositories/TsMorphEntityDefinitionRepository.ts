@@ -1,3 +1,4 @@
+// ./src/adapter/repositories/TsMorphEntityDefinitionRepository.ts
 import * as ts from 'ts-morph';
 import { Node, SyntaxKind } from 'ts-morph';
 import { readdirSync, statSync } from 'fs';
@@ -66,11 +67,16 @@ export class TsMorphEntityDefinitionRepository
                     .getText()}, propertyName: ${proreptyName}, entityName: ${entityName}`,
                 );
               }
+              const acceptableValues = this.extractAcceptableValues(
+                valueDeclaration.getType(),
+              );
+
               return {
                 isReference: false,
                 name: proreptyName,
                 propertyType,
                 isNullable: nullable,
+                acceptableValues,
               };
             }
             const isUnique = ref.getText().indexOf('Unique<') === 0;
@@ -94,6 +100,15 @@ export class TsMorphEntityDefinitionRepository
 
     return typeDefinitionAsts;
   }
+  extractAcceptableValues = (type: ts.Type): string[] | null => {
+    if (!type.isUnion()) {
+      return null;
+    }
+    return type
+      .getUnionTypes()
+      .filter((t) => !t.isNull() && !t.isUndefined() && t.isLiteral())
+      .map((t) => t.getText());
+  };
 
   isNullable = (valueDeclaration: Node): boolean => {
     if (
