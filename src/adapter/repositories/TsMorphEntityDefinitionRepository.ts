@@ -101,6 +101,10 @@ export class TsMorphEntityDefinitionRepository
     return typeDefinitionAsts;
   }
   extractAcceptableValues = (type: ts.Type): string[] | null => {
+    const literalValue = type.getLiteralValue();
+    if (literalValue) {
+      return [String(literalValue)];
+    }
     if (!type.isUnion()) {
       return null;
     }

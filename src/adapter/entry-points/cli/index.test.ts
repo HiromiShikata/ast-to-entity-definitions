@@ -6,8 +6,48 @@ describe('commander program', () => {
       'npx ts-node ./src/adapter/entry-points/cli/index.ts ./testdata/src/domain/entities',
     ).toString();
 
-    expect(output.trim()).toBe(
+    expect(output.trim()).toEqual(
       JSON.stringify([
+        {
+          name: 'Administrator',
+          properties: [
+            {
+              isReference: false,
+              name: 'id',
+              propertyType: 'string',
+              isNullable: false,
+              acceptableValues: null,
+            },
+            {
+              isReference: true,
+              name: 'userId',
+              targetEntityDefinitionName: 'User',
+              isUnique: false,
+              isNullable: false,
+            },
+            {
+              isReference: false,
+              name: 'role',
+              propertyType: 'string',
+              isNullable: false,
+              acceptableValues: ['administrator'],
+            },
+            {
+              isReference: false,
+              name: 'deactivated',
+              propertyType: 'boolean',
+              isNullable: false,
+              acceptableValues: ['false', 'true'],
+            },
+            {
+              isReference: false,
+              name: 'createdAt',
+              propertyType: 'Date',
+              isNullable: false,
+              acceptableValues: null,
+            },
+          ],
+        },
         {
           name: 'Group',
           properties: [
@@ -115,14 +155,14 @@ describe('commander program', () => {
               name: 'stringLiteral',
               propertyType: 'string',
               isNullable: false,
-              acceptableValues: null,
+              acceptableValues: ['home'],
             },
             {
               isReference: false,
               name: 'numberLiteral',
               propertyType: 'number',
               isNullable: false,
-              acceptableValues: null,
+              acceptableValues: ['1'],
             },
             {
               isReference: false,

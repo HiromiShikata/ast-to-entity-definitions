@@ -16,6 +16,46 @@ describe('TsMorphEntityDefinitionRepository', () => {
 
       expect(result).toEqual([
         {
+          name: 'Administrator',
+          properties: [
+            {
+              acceptableValues: null,
+              isNullable: false,
+              isReference: false,
+              name: 'id',
+              propertyType: 'string',
+            },
+            {
+              isNullable: false,
+              isReference: true,
+              isUnique: false,
+              name: 'userId',
+              targetEntityDefinitionName: 'User',
+            },
+            {
+              acceptableValues: ['administrator'],
+              isNullable: false,
+              isReference: false,
+              name: 'role',
+              propertyType: 'string',
+            },
+            {
+              acceptableValues: ['false', 'true'],
+              isNullable: false,
+              isReference: false,
+              name: 'deactivated',
+              propertyType: 'boolean',
+            },
+            {
+              acceptableValues: null,
+              isNullable: false,
+              isReference: false,
+              name: 'createdAt',
+              propertyType: 'Date',
+            },
+          ],
+        },
+        {
           name: 'Group',
           properties: [
             {
@@ -118,14 +158,14 @@ describe('TsMorphEntityDefinitionRepository', () => {
               propertyType: 'string',
             },
             {
-              acceptableValues: null,
+              acceptableValues: ['home'],
               isNullable: false,
               isReference: false,
               name: 'stringLiteral',
               propertyType: 'string',
             },
             {
-              acceptableValues: null,
+              acceptableValues: ['1'],
               isNullable: false,
               isReference: false,
               name: 'numberLiteral',
