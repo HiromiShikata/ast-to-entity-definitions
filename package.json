@@ -15,6 +15,11 @@
   "bin": {
     "ast-to-entity-definitions": "./bin/adapter/entry-points/cli/index.js"
   },
+  "files": [
+    "bin",
+    "src",
+    "testdata"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/HiromiShikata/ast-to-entity-definitions.git"
