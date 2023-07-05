@@ -131,6 +131,13 @@ describe('TsMorphEntityDefinitionRepository', () => {
               name: 'createdAt',
               propertyType: 'Date',
             },
+            {
+              isNullable: true,
+              isReference: true,
+              isUnique: false,
+              name: 'parentUserId',
+              targetEntityDefinitionName: 'User',
+            },
           ],
         },
         {

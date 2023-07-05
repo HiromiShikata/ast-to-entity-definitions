@@ -124,6 +124,13 @@ describe('commander program', () => {
               isNullable: false,
               acceptableValues: null,
             },
+            {
+              isReference: true,
+              name: 'parentUserId',
+              targetEntityDefinitionName: 'User',
+              isUnique: false,
+              isNullable: true,
+            },
           ],
         },
         {

@@ -3,4 +3,5 @@ export type User = {
   name: string;
   deactivated: boolean;
   createdAt: Date;
+  parentUserId: User['id'] | null;
 };
