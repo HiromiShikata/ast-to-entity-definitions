@@ -37,7 +37,7 @@ describe('commander program', () => {
               name: 'deactivated',
               propertyType: 'boolean',
               isNullable: false,
-              acceptableValues: ['false', 'true'],
+              acceptableValues: null,
             },
             {
               isReference: false,
@@ -115,7 +115,7 @@ describe('commander program', () => {
               name: 'deactivated',
               propertyType: 'boolean',
               isNullable: false,
-              acceptableValues: ['false', 'true'],
+              acceptableValues: null,
             },
             {
               isReference: false,

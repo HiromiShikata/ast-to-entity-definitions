@@ -40,7 +40,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
               propertyType: 'string',
             },
             {
-              acceptableValues: ['false', 'true'],
+              acceptableValues: null,
               isNullable: false,
               isReference: false,
               name: 'deactivated',
@@ -118,7 +118,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
               propertyType: 'string',
             },
             {
-              acceptableValues: ['false', 'true'],
+              acceptableValues: null,
               isNullable: false,
               isReference: false,
               name: 'deactivated',

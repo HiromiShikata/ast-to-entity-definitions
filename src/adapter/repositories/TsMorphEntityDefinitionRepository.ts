@@ -107,6 +107,8 @@ export class TsMorphEntityDefinitionRepository
     }
     if (!type.isUnion()) {
       return null;
+    } else if (type.isBoolean()) {
+      return null;
     }
     return type
       .getUnionTypes()
