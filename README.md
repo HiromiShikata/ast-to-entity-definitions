@@ -7,6 +7,7 @@
 Welcome to `ast-to-entity-definitions`! 🎉 This tool lets you easily generate EntityDefinition and EntityPropertyDefinition from your TypeScript type information. By doing this, you can streamline the process of source code generation!
 
 ## 📚 Table of Contents
+
 - [Getting Started](#getting-started-rocket)
 - [Usage](#usage-wrench)
   - [CLI](#cli)
@@ -16,6 +17,7 @@ Welcome to `ast-to-entity-definitions`! 🎉 This tool lets you easily generate 
 - [License](#license-scroll)
 
 ## Getting Started 🚀
+
 You can start using `ast-to-entity-definitions` by installing it via npm:
 
 ```bash
@@ -43,7 +45,7 @@ npx ast-to-entity-definitions ./src/domain/entities
 Alternatively, you can import the `getEntityDefinitions` function and use it in your own scripts:
 
 ```typescript
-import { getEntityDefinitions } from "ast-to-entity-definitions/bin/adapter/entry-points/function/index";
+import { getEntityDefinitions } from 'ast-to-entity-definitions/bin/adapter/entry-points/function/index';
 console.log(getEntityDefinitions(path));
 ```
 
@@ -69,11 +71,12 @@ This example creates EntityDefinitions for a `Administrator`, `Group`, `Item`, `
 
 ## Contributing 🔨⌨️
 
-Contributions, issues and feature requests are welcome! Feel free to check [issues page](https://github.com/HiromiShikata/ast-to-entity-definitions/issues). 
+Contributions, issues and feature requests are welcome! Feel free to check [issues page](https://github.com/HiromiShikata/ast-to-entity-definitions/issues).
 
 ## License 📜
 
-`ast-to-entity-definitions` is [MIT licensed](https://github.com/HiromiShikata/ast-to-entity-definitions/blob/main/LICENSE). 
+`ast-to-entity-definitions` is [MIT licensed](https://github.com/HiromiShikata/ast-to-entity-definitions/blob/main/LICENSE).
 
 ---
+
 Give a ⭐️ if this project helped you!
