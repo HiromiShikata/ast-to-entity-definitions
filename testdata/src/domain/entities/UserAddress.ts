@@ -1,10 +1,14 @@
-import { User } from './User';
-import { Unique } from '../../../../src/domain/entities/Unique';
+import type { Id, Unique } from 'ast-to-entity-definitions';
+import type { User } from './User';
 
 export type UserAddress = {
-  id: string;
+  id: Id;
   userId: Unique<User['id']>;
   address: string;
+  stringArray: string[];
+  numberArray: number[];
+  booleanArray: boolean[];
+  dateArray: Date[];
   stringLiteral: 'home';
   numberLiteral: 1;
   booleanLiteral: true;

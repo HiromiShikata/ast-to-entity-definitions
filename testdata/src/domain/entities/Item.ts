@@ -1,4 +1,6 @@
+import type { Id } from 'ast-to-entity-definitions';
+
 export interface Item {
-  id: string;
+  id: Id;
   name: string;
 }

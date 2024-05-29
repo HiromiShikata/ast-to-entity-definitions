@@ -1,7 +1,8 @@
 // ./src/adapter/repositories/TsMorphEntityDefinitionRepository.ts
 import { TsMorphEntityDefinitionRepository } from './TsMorphEntityDefinitionRepository';
 import * as ts from 'ts-morph';
-import { Node } from 'ts-morph';
+import type { Node } from 'ts-morph';
+import { EntityDefinition } from '../../domain/entities/EntityDefinition';
 
 describe('TsMorphEntityDefinitionRepository', () => {
   let repository: TsMorphEntityDefinitionRepository;
@@ -14,16 +15,14 @@ describe('TsMorphEntityDefinitionRepository', () => {
       const path = './testdata/src/domain/entities';
       const result = await repository.find(path);
 
-      expect(result).toEqual([
+      expect(result).toEqual<EntityDefinition[]>([
         {
           name: 'Administrator',
           properties: [
             {
-              acceptableValues: null,
-              isNullable: false,
               isReference: false,
               name: 'id',
-              propertyType: 'string',
+              propertyType: 'Id',
             },
             {
               isNullable: false,
@@ -36,6 +35,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
               acceptableValues: ['administrator'],
               isNullable: false,
               isReference: false,
+              isArray: false,
               name: 'role',
               propertyType: 'string',
             },
@@ -43,6 +43,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
               acceptableValues: null,
               isNullable: false,
               isReference: false,
+              isArray: false,
               name: 'deactivated',
               propertyType: 'boolean',
             },
@@ -50,6 +51,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
               acceptableValues: null,
               isNullable: false,
               isReference: false,
+              isArray: false,
               name: 'createdAt',
               propertyType: 'Date',
             },
@@ -59,16 +61,15 @@ describe('TsMorphEntityDefinitionRepository', () => {
           name: 'Group',
           properties: [
             {
-              acceptableValues: null,
-              isNullable: false,
               isReference: false,
               name: 'id',
-              propertyType: 'string',
+              propertyType: 'Id',
             },
             {
               acceptableValues: null,
               isNullable: false,
               isReference: false,
+              isArray: false,
               name: 'name',
               propertyType: 'string',
             },
@@ -76,6 +77,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
               acceptableValues: ['Sports', 'Music', 'Movies'],
               isNullable: false,
               isReference: false,
+              isArray: false,
               name: 'category',
               propertyType: 'string',
             },
@@ -85,16 +87,15 @@ describe('TsMorphEntityDefinitionRepository', () => {
           name: 'Item',
           properties: [
             {
-              acceptableValues: null,
-              isNullable: false,
               isReference: false,
               name: 'id',
-              propertyType: 'string',
+              propertyType: 'Id',
             },
             {
               acceptableValues: null,
               isNullable: false,
               isReference: false,
+              isArray: false,
               name: 'name',
               propertyType: 'string',
             },
@@ -104,16 +105,15 @@ describe('TsMorphEntityDefinitionRepository', () => {
           name: 'User',
           properties: [
             {
-              acceptableValues: null,
-              isNullable: false,
               isReference: false,
               name: 'id',
-              propertyType: 'string',
+              propertyType: 'Id',
             },
             {
               acceptableValues: null,
               isNullable: false,
               isReference: false,
+              isArray: false,
               name: 'name',
               propertyType: 'string',
             },
@@ -121,6 +121,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
               acceptableValues: null,
               isNullable: false,
               isReference: false,
+              isArray: false,
               name: 'deactivated',
               propertyType: 'boolean',
             },
@@ -128,6 +129,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
               acceptableValues: null,
               isNullable: false,
               isReference: false,
+              isArray: false,
               name: 'createdAt',
               propertyType: 'Date',
             },
@@ -144,11 +146,9 @@ describe('TsMorphEntityDefinitionRepository', () => {
           name: 'UserAddress',
           properties: [
             {
-              acceptableValues: null,
-              isNullable: false,
               isReference: false,
               name: 'id',
-              propertyType: 'string',
+              propertyType: 'Id',
             },
             {
               isNullable: false,
@@ -161,13 +161,47 @@ describe('TsMorphEntityDefinitionRepository', () => {
               acceptableValues: null,
               isNullable: false,
               isReference: false,
+              isArray: false,
               name: 'address',
               propertyType: 'string',
+            },
+            {
+              acceptableValues: null,
+              isArray: true,
+              isNullable: false,
+              isReference: false,
+              name: 'stringArray',
+              propertyType: 'string',
+            },
+            {
+              acceptableValues: null,
+              isArray: true,
+              isNullable: false,
+              isReference: false,
+              name: 'numberArray',
+              propertyType: 'number',
+            },
+            {
+              acceptableValues: null,
+              isArray: true,
+              isNullable: false,
+              isReference: false,
+              name: 'booleanArray',
+              propertyType: 'boolean',
+            },
+            {
+              acceptableValues: null,
+              isArray: true,
+              isNullable: false,
+              isReference: false,
+              name: 'dateArray',
+              propertyType: 'Date',
             },
             {
               acceptableValues: ['home'],
               isNullable: false,
               isReference: false,
+              isArray: false,
               name: 'stringLiteral',
               propertyType: 'string',
             },
@@ -175,6 +209,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
               acceptableValues: ['1'],
               isNullable: false,
               isReference: false,
+              isArray: false,
               name: 'numberLiteral',
               propertyType: 'number',
             },
@@ -182,6 +217,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
               acceptableValues: null,
               isNullable: false,
               isReference: false,
+              isArray: false,
               name: 'booleanLiteral',
               propertyType: 'boolean',
             },
@@ -189,6 +225,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
               acceptableValues: null,
               isNullable: true,
               isReference: false,
+              isArray: false,
               name: 'nullableWithNullUnion',
               propertyType: 'string',
             },
@@ -196,6 +233,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
               acceptableValues: null,
               isNullable: true,
               isReference: false,
+              isArray: false,
               name: 'nullableWithUndefined',
               propertyType: 'string',
             },
@@ -203,6 +241,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
               acceptableValues: null,
               isNullable: true,
               isReference: false,
+              isArray: false,
               name: 'nullableWithQuestionMark',
               propertyType: 'string',
             },
@@ -210,6 +249,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
               acceptableValues: ['dog', 'cat'],
               isNullable: true,
               isReference: false,
+              isArray: false,
               name: 'unionLiteralsWithSameTypeNullable',
               propertyType: 'string',
             },
@@ -217,6 +257,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
               acceptableValues: ['dog', 'cat'],
               isNullable: true,
               isReference: false,
+              isArray: false,
               name: 'unionLiteralsWithSameTypeQuestionMark',
               propertyType: 'string',
             },
@@ -224,6 +265,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
               acceptableValues: ['dog', 'cat'],
               isNullable: false,
               isReference: false,
+              isArray: false,
               name: 'unionLiteralsWithSameType',
               propertyType: 'string',
             },
@@ -233,11 +275,9 @@ describe('TsMorphEntityDefinitionRepository', () => {
           name: 'UserGroup',
           properties: [
             {
-              acceptableValues: null,
-              isNullable: false,
               isReference: false,
               name: 'id',
-              propertyType: 'string',
+              propertyType: 'Id',
             },
             {
               isNullable: false,

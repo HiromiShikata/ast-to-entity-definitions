@@ -1,5 +1,7 @@
+import type { Id } from 'ast-to-entity-definitions';
+
 export type Group = {
-  id: string;
+  id: Id;
   name: string;
   category: 'Sports' | 'Music' | 'Movies';
 };
