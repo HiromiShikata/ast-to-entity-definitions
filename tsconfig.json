@@ -12,6 +12,6 @@
     "declaration": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"],
+  "include": ["src", "testdata", ".eslintrc.cjs"],
   "exclude": ["node_modules", "**/__tests__/*"]
 }

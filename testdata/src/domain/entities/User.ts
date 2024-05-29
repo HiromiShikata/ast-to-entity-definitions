@@ -1,5 +1,7 @@
+import { Id } from 'ast-to-entity-definitions';
+
 export type User = {
-  id: string;
+  id: Id;
   name: string;
   deactivated: boolean;
   createdAt: Date;

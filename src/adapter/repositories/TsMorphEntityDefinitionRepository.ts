@@ -55,7 +55,19 @@ export class TsMorphEntityDefinitionRepository
               valueDeclaration.getDescendantsOfKind(
                 SyntaxKind.TypeReference,
               )[0] || null;
-            const nullable = this.isNullable(valueDeclaration);
+            
+            // EntityPropertyDefinitionId
+            if (ref?.getText() === 'Id') {
+              return {
+                isReference: false,
+                name: proreptyName,
+                propertyType: 'Id',
+              };
+            }
+            const isNullable = this.isNullable(valueDeclaration);
+            const isArray = this.isArrray(valueDeclaration);
+
+            // EntityPropertyDefinitionPrimitive
             if (!ref || ref.getText() === 'Date') {
               const propertyType = this.decideTypeForPrimitive(
                 valueDeclaration.getType(),
@@ -75,10 +87,13 @@ export class TsMorphEntityDefinitionRepository
                 isReference: false,
                 name: proreptyName,
                 propertyType,
-                isNullable: nullable,
+                isNullable,
+                isArray,
                 acceptableValues,
               };
             }
+            
+            // EntityPropertyDefinitionReference
             const isUnique = ref.getText().indexOf('Unique<') === 0;
             const propertyType = isUnique
               ? ref
@@ -91,7 +106,7 @@ export class TsMorphEntityDefinitionRepository
               name: proreptyName,
               targetEntityDefinitionName: propertyType,
               isUnique,
-              isNullable: nullable,
+              isNullable: isNullable,
             };
           })
           .filter((item): item is EntityPropertyDefinition => item !== null);
@@ -133,12 +148,25 @@ export class TsMorphEntityDefinitionRepository
       .getTypeNodes()
       .find((n) => n.getType().isNull() || n.getType().isUndefined());
   };
+  isArrray = (valueDeclaration: Node): boolean => {
+    return valueDeclaration
+      .getDescendantsOfKind(SyntaxKind.ArrayType)
+      .length > 0;
+  }
   decideTypeForPrimitive = (
     type: ts.Type,
   ): 'boolean' | 'number' | 'string' | 'Date' | null => {
     const mapTypeToTypeName = (
       t: ts.Type,
     ): EntityPropertyDefinitionPrimitive['propertyType'] | null => {
+      if (t.isArray()) {
+        // extract element type of array
+        const getArrayElementType = t.getArrayElementType();
+        if (!getArrayElementType) {
+          return null;
+        }
+        return this.decideTypeForPrimitive(getArrayElementType);
+      }
       if (t.isBoolean() || t.isBooleanLiteral()) {
         return 'boolean';
       } else if (t.isNumber() || t.isNumberLiteral()) {

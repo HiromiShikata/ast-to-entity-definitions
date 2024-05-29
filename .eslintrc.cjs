@@ -1,4 +1,4 @@
-module.exports = {
+module.exports = { // eslint-disable-line no-undef
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',

@@ -28,6 +28,7 @@ describe('GetDefinitionByPathUseCase', () => {
               propertyType: 'string',
               isReference: false,
               isNullable: false,
+              isArray: false,
               acceptableValues: null,
             },
             {
@@ -35,6 +36,7 @@ describe('GetDefinitionByPathUseCase', () => {
               propertyType: 'string',
               isReference: false,
               isNullable: false,
+              isArray: false,
               acceptableValues: null,
             },
             {
@@ -42,6 +44,7 @@ describe('GetDefinitionByPathUseCase', () => {
               propertyType: 'string',
               isReference: false,
               isNullable: false,
+              isArray: false,
               acceptableValues: null,
             },
           ],
@@ -54,6 +57,7 @@ describe('GetDefinitionByPathUseCase', () => {
               propertyType: 'string',
               isReference: false,
               isNullable: false,
+              isArray: false,
               acceptableValues: null,
             },
             {
@@ -61,6 +65,7 @@ describe('GetDefinitionByPathUseCase', () => {
               propertyType: 'string',
               isReference: false,
               isNullable: false,
+              isArray: false,
               acceptableValues: null,
             },
             {
@@ -68,6 +73,7 @@ describe('GetDefinitionByPathUseCase', () => {
               propertyType: 'string',
               isReference: false,
               isNullable: false,
+              isArray: false,
               acceptableValues: ['Sports', 'Music', 'Movies'],
             },
           ],
@@ -80,6 +86,7 @@ describe('GetDefinitionByPathUseCase', () => {
               propertyType: 'string',
               isReference: false,
               isNullable: false,
+              isArray: false,
               acceptableValues: null,
             },
             {
@@ -106,6 +113,7 @@ describe('GetDefinitionByPathUseCase', () => {
               propertyType: 'string',
               isReference: false,
               isNullable: false,
+              isArray: false,
               acceptableValues: null,
             },
             {
@@ -120,6 +128,7 @@ describe('GetDefinitionByPathUseCase', () => {
               propertyType: 'string',
               isReference: false,
               isNullable: false,
+              isArray: false,
               acceptableValues: null,
             },
           ],
@@ -135,6 +144,7 @@ describe('GetDefinitionByPathUseCase', () => {
               propertyType: 'string',
               isReference: false,
               isNullable: false,
+              isArray: false,
               acceptableValues: null,
             },
             {
@@ -142,6 +152,7 @@ describe('GetDefinitionByPathUseCase', () => {
               propertyType: 'string',
               isReference: false,
               isNullable: false,
+              isArray: false,
               acceptableValues: null,
             },
             {
@@ -149,6 +160,7 @@ describe('GetDefinitionByPathUseCase', () => {
               propertyType: 'string',
               isReference: false,
               isNullable: false,
+              isArray: false,
               acceptableValues: null,
             },
           ],
@@ -161,6 +173,7 @@ describe('GetDefinitionByPathUseCase', () => {
               propertyType: 'string',
               isReference: false,
               isNullable: false,
+              isArray: false,
               acceptableValues: null,
             },
             {
@@ -168,6 +181,7 @@ describe('GetDefinitionByPathUseCase', () => {
               propertyType: 'string',
               isReference: false,
               isNullable: false,
+              isArray: false,
               acceptableValues: null,
             },
 
@@ -176,6 +190,7 @@ describe('GetDefinitionByPathUseCase', () => {
               propertyType: 'string',
               isReference: false,
               isNullable: false,
+              isArray: false,
               acceptableValues: ['Sports', 'Music', 'Movies'],
             },
           ],
@@ -188,6 +203,7 @@ describe('GetDefinitionByPathUseCase', () => {
               propertyType: 'string',
               isReference: false,
               isNullable: false,
+              isArray: false,
               acceptableValues: null,
             },
             {
@@ -214,6 +230,7 @@ describe('GetDefinitionByPathUseCase', () => {
               propertyType: 'string',
               isReference: false,
               isNullable: false,
+              isArray: false,
               acceptableValues: null,
             },
             {
@@ -228,6 +245,7 @@ describe('GetDefinitionByPathUseCase', () => {
               propertyType: 'string',
               isReference: false,
               isNullable: false,
+              isArray: false,
               acceptableValues: null,
             },
           ],
