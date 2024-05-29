@@ -55,7 +55,7 @@ export class TsMorphEntityDefinitionRepository
               valueDeclaration.getDescendantsOfKind(
                 SyntaxKind.TypeReference,
               )[0] || null;
-            
+
             // EntityPropertyDefinitionId
             if (ref?.getText() === 'Id') {
               return {
@@ -92,7 +92,7 @@ export class TsMorphEntityDefinitionRepository
                 acceptableValues,
               };
             }
-            
+
             // EntityPropertyDefinitionReference
             const isUnique = ref.getText().indexOf('Unique<') === 0;
             const propertyType = isUnique
@@ -149,10 +149,10 @@ export class TsMorphEntityDefinitionRepository
       .find((n) => n.getType().isNull() || n.getType().isUndefined());
   };
   isArray = (valueDeclaration: Node): boolean => {
-    return valueDeclaration
-      .getDescendantsOfKind(SyntaxKind.ArrayType)
-      .length > 0;
-  }
+    return (
+      valueDeclaration.getDescendantsOfKind(SyntaxKind.ArrayType).length > 0
+    );
+  };
   decideTypeForPrimitive = (
     type: ts.Type,
   ): 'boolean' | 'number' | 'string' | 'Date' | null => {
