@@ -1,7 +1,7 @@
 // ./src/adapter/repositories/TsMorphEntityDefinitionRepository.ts
 import { TsMorphEntityDefinitionRepository } from './TsMorphEntityDefinitionRepository';
 import * as ts from 'ts-morph';
-import { Node } from 'ts-morph';
+import type { Node } from 'ts-morph';
 import { EntityDefinition } from '../../domain/entities/EntityDefinition';
 
 describe('TsMorphEntityDefinitionRepository', () => {

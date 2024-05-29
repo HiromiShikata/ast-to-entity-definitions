@@ -1,5 +1,5 @@
-import { Id, Unique } from 'ast-to-entity-definitions';
-import { User } from './User';
+import type { Id, Unique } from 'ast-to-entity-definitions';
+import type { User } from './User';
 
 export type UserAddress = {
   id: Id;

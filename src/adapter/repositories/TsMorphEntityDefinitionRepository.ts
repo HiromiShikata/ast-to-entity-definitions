@@ -65,7 +65,7 @@ export class TsMorphEntityDefinitionRepository
               };
             }
             const isNullable = this.isNullable(valueDeclaration);
-            const isArray = this.isArrray(valueDeclaration);
+            const isArray = this.isArray(valueDeclaration);
 
             // EntityPropertyDefinitionPrimitive
             if (!ref || ref.getText() === 'Date') {
@@ -148,7 +148,7 @@ export class TsMorphEntityDefinitionRepository
       .getTypeNodes()
       .find((n) => n.getType().isNull() || n.getType().isUndefined());
   };
-  isArrray = (valueDeclaration: Node): boolean => {
+  isArray = (valueDeclaration: Node): boolean => {
     return valueDeclaration
       .getDescendantsOfKind(SyntaxKind.ArrayType)
       .length > 0;

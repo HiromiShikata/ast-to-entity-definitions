@@ -1,4 +1,4 @@
-import { Id } from 'ast-to-entity-definitions';
+import type { Id } from 'ast-to-entity-definitions';
 
 export interface Item {
   id: Id;
