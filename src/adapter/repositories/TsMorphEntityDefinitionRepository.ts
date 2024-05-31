@@ -56,13 +56,14 @@ export class TsMorphEntityDefinitionRepository
                 SyntaxKind.TypeReference,
               )[0] || null;
             const isUnique = !!ref && ref.getText().indexOf('Unique<') === 0;
-            const refText = (isUnique
-            ? ref
-                ?.getText()
-                ?.replace(/^Unique</g, '')
-                ?.replace(/>$/g, '')
-              : ref?.getText()) ?? null;
-              
+            const refText =
+              (isUnique
+                ? ref
+                    ?.getText()
+                    ?.replace(/^Unique</g, '')
+                    ?.replace(/>$/g, '')
+                : ref?.getText()) ?? null;
+
             // EntityPropertyDefinitionId
             if (refText === 'Id') {
               return {
@@ -75,15 +76,16 @@ export class TsMorphEntityDefinitionRepository
             const isArray = this.isArray(valueDeclaration);
 
             // EntityPropertyDefinitionPrimitive
-            if (!refText
-              || refText === 'boolean'
-              || refText === 'number'
-              || refText === 'string'
-              || refText === 'Date'
+            if (
+              !refText ||
+              refText === 'boolean' ||
+              refText === 'number' ||
+              refText === 'string' ||
+              refText === 'Date'
             ) {
-              const propertyType = refText ? this.primitiveTypeText(refText) : this.decideTypeForPrimitive(
-                valueDeclaration.getType(),
-              );
+              const propertyType = refText
+                ? this.primitiveTypeText(refText)
+                : this.decideTypeForPrimitive(valueDeclaration.getType());
               if (propertyType === null) {
                 throw new Error(
                   `unexpected type: ${valueDeclaration
@@ -165,14 +167,19 @@ export class TsMorphEntityDefinitionRepository
       valueDeclaration.getDescendantsOfKind(SyntaxKind.ArrayType).length > 0
     );
   };
-  primitiveTypeText = (text: string): 'boolean' | 'number' | 'string' | 'Date' | null => {
+  primitiveTypeText = (
+    text: string,
+  ): 'boolean' | 'number' | 'string' | 'Date' | null => {
     if (
-      text === 'boolean' || text === 'number' || text === 'string' || text === 'Date'
+      text === 'boolean' ||
+      text === 'number' ||
+      text === 'string' ||
+      text === 'Date'
     ) {
       return text;
     }
     return null;
-  }
+  };
   decideTypeForPrimitive = (
     type: ts.Type,
   ): 'boolean' | 'number' | 'string' | 'Date' | null => {
