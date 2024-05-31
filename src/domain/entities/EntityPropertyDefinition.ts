@@ -12,6 +12,7 @@ export type EntityPropertyDefinitionPrimitive = {
   isReference: false;
   propertyType: 'boolean' | 'number' | 'string' | 'Date';
   name: string;
+  isUnique: boolean;
   isNullable: boolean;
   isArray: boolean;
   acceptableValues: string[] | null;

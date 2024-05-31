@@ -27,6 +27,7 @@ describe('commander program', () => {
           },
           {
             acceptableValues: ['administrator'],
+            isUnique: false,
             isNullable: false,
             isReference: false,
             isArray: false,
@@ -35,6 +36,7 @@ describe('commander program', () => {
           },
           {
             acceptableValues: null,
+            isUnique: false,
             isNullable: false,
             isReference: false,
             isArray: false,
@@ -43,6 +45,7 @@ describe('commander program', () => {
           },
           {
             acceptableValues: null,
+            isUnique: false,
             isNullable: false,
             isReference: false,
             isArray: false,
@@ -61,6 +64,7 @@ describe('commander program', () => {
           },
           {
             acceptableValues: null,
+            isUnique: false,
             isNullable: false,
             isReference: false,
             isArray: false,
@@ -69,6 +73,7 @@ describe('commander program', () => {
           },
           {
             acceptableValues: ['Sports', 'Music', 'Movies'],
+            isUnique: false,
             isNullable: false,
             isReference: false,
             isArray: false,
@@ -87,6 +92,7 @@ describe('commander program', () => {
           },
           {
             acceptableValues: null,
+            isUnique: false,
             isNullable: false,
             isReference: false,
             isArray: false,
@@ -105,6 +111,7 @@ describe('commander program', () => {
           },
           {
             acceptableValues: null,
+            isUnique: false,
             isNullable: false,
             isReference: false,
             isArray: false,
@@ -113,6 +120,7 @@ describe('commander program', () => {
           },
           {
             acceptableValues: null,
+            isUnique: false,
             isNullable: false,
             isReference: false,
             isArray: false,
@@ -121,6 +129,7 @@ describe('commander program', () => {
           },
           {
             acceptableValues: null,
+            isUnique: false,
             isNullable: false,
             isReference: false,
             isArray: false,
@@ -153,6 +162,7 @@ describe('commander program', () => {
           },
           {
             acceptableValues: null,
+            isUnique: true,
             isNullable: false,
             isReference: false,
             isArray: false,
@@ -161,6 +171,7 @@ describe('commander program', () => {
           },
           {
             acceptableValues: null,
+            isUnique: false,
             isArray: true,
             isNullable: false,
             isReference: false,
@@ -169,6 +180,7 @@ describe('commander program', () => {
           },
           {
             acceptableValues: null,
+            isUnique: false,
             isArray: true,
             isNullable: false,
             isReference: false,
@@ -177,6 +189,7 @@ describe('commander program', () => {
           },
           {
             acceptableValues: null,
+            isUnique: false,
             isArray: true,
             isNullable: false,
             isReference: false,
@@ -185,6 +198,7 @@ describe('commander program', () => {
           },
           {
             acceptableValues: null,
+            isUnique: false,
             isArray: true,
             isNullable: false,
             isReference: false,
@@ -193,6 +207,7 @@ describe('commander program', () => {
           },
           {
             acceptableValues: ['home'],
+            isUnique: false,
             isNullable: false,
             isReference: false,
             isArray: false,
@@ -201,6 +216,7 @@ describe('commander program', () => {
           },
           {
             acceptableValues: ['1'],
+            isUnique: false,
             isNullable: false,
             isReference: false,
             isArray: false,
@@ -209,6 +225,7 @@ describe('commander program', () => {
           },
           {
             acceptableValues: null,
+            isUnique: false,
             isNullable: false,
             isReference: false,
             isArray: false,
@@ -217,6 +234,7 @@ describe('commander program', () => {
           },
           {
             acceptableValues: null,
+            isUnique: false,
             isNullable: true,
             isReference: false,
             isArray: false,
@@ -225,6 +243,7 @@ describe('commander program', () => {
           },
           {
             acceptableValues: null,
+            isUnique: false,
             isNullable: true,
             isReference: false,
             isArray: false,
@@ -233,6 +252,7 @@ describe('commander program', () => {
           },
           {
             acceptableValues: null,
+            isUnique: false,
             isNullable: true,
             isReference: false,
             isArray: false,
@@ -241,6 +261,7 @@ describe('commander program', () => {
           },
           {
             acceptableValues: ['dog', 'cat'],
+            isUnique: false,
             isNullable: true,
             isReference: false,
             isArray: false,
@@ -249,6 +270,7 @@ describe('commander program', () => {
           },
           {
             acceptableValues: ['dog', 'cat'],
+            isUnique: false,
             isNullable: true,
             isReference: false,
             isArray: false,
@@ -257,6 +279,7 @@ describe('commander program', () => {
           },
           {
             acceptableValues: ['dog', 'cat'],
+            isUnique: false,
             isNullable: false,
             isReference: false,
             isArray: false,
