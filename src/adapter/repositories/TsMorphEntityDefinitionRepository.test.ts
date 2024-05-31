@@ -33,6 +33,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
             },
             {
               acceptableValues: ['administrator'],
+              isUnique: false,
               isNullable: false,
               isReference: false,
               isArray: false,
@@ -41,6 +42,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
             },
             {
               acceptableValues: null,
+              isUnique: false,
               isNullable: false,
               isReference: false,
               isArray: false,
@@ -49,6 +51,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
             },
             {
               acceptableValues: null,
+              isUnique: false,
               isNullable: false,
               isReference: false,
               isArray: false,
@@ -67,6 +70,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
             },
             {
               acceptableValues: null,
+              isUnique: false,
               isNullable: false,
               isReference: false,
               isArray: false,
@@ -75,6 +79,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
             },
             {
               acceptableValues: ['Sports', 'Music', 'Movies'],
+              isUnique: false,
               isNullable: false,
               isReference: false,
               isArray: false,
@@ -93,6 +98,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
             },
             {
               acceptableValues: null,
+              isUnique: false,
               isNullable: false,
               isReference: false,
               isArray: false,
@@ -111,6 +117,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
             },
             {
               acceptableValues: null,
+              isUnique: false,
               isNullable: false,
               isReference: false,
               isArray: false,
@@ -119,6 +126,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
             },
             {
               acceptableValues: null,
+              isUnique: false,
               isNullable: false,
               isReference: false,
               isArray: false,
@@ -127,6 +135,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
             },
             {
               acceptableValues: null,
+              isUnique: false,
               isNullable: false,
               isReference: false,
               isArray: false,
@@ -159,6 +168,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
             },
             {
               acceptableValues: null,
+              isUnique: true,
               isNullable: false,
               isReference: false,
               isArray: false,
@@ -167,6 +177,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
             },
             {
               acceptableValues: null,
+              isUnique: false,
               isArray: true,
               isNullable: false,
               isReference: false,
@@ -175,6 +186,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
             },
             {
               acceptableValues: null,
+              isUnique: false,
               isArray: true,
               isNullable: false,
               isReference: false,
@@ -183,6 +195,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
             },
             {
               acceptableValues: null,
+              isUnique: false,
               isArray: true,
               isNullable: false,
               isReference: false,
@@ -191,6 +204,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
             },
             {
               acceptableValues: null,
+              isUnique: false,
               isArray: true,
               isNullable: false,
               isReference: false,
@@ -199,6 +213,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
             },
             {
               acceptableValues: ['home'],
+              isUnique: false,
               isNullable: false,
               isReference: false,
               isArray: false,
@@ -207,6 +222,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
             },
             {
               acceptableValues: ['1'],
+              isUnique: false,
               isNullable: false,
               isReference: false,
               isArray: false,
@@ -215,6 +231,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
             },
             {
               acceptableValues: null,
+              isUnique: false,
               isNullable: false,
               isReference: false,
               isArray: false,
@@ -223,6 +240,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
             },
             {
               acceptableValues: null,
+              isUnique: false,
               isNullable: true,
               isReference: false,
               isArray: false,
@@ -231,6 +249,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
             },
             {
               acceptableValues: null,
+              isUnique: false,
               isNullable: true,
               isReference: false,
               isArray: false,
@@ -239,6 +258,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
             },
             {
               acceptableValues: null,
+              isUnique: false,
               isNullable: true,
               isReference: false,
               isArray: false,
@@ -247,6 +267,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
             },
             {
               acceptableValues: ['dog', 'cat'],
+              isUnique: false,
               isNullable: true,
               isReference: false,
               isArray: false,
@@ -255,6 +276,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
             },
             {
               acceptableValues: ['dog', 'cat'],
+              isUnique: false,
               isNullable: true,
               isReference: false,
               isArray: false,
@@ -263,6 +285,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
             },
             {
               acceptableValues: ['dog', 'cat'],
+              isUnique: false,
               isNullable: false,
               isReference: false,
               isArray: false,

@@ -4,7 +4,7 @@ import type { User } from './User';
 export type UserAddress = {
   id: Id;
   userId: Unique<User['id']>;
-  address: string;
+  address: Unique<string>;
   stringArray: string[];
   numberArray: number[];
   booleanArray: boolean[];

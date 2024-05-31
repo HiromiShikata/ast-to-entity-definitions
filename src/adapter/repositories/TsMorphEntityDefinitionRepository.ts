@@ -55,9 +55,16 @@ export class TsMorphEntityDefinitionRepository
               valueDeclaration.getDescendantsOfKind(
                 SyntaxKind.TypeReference,
               )[0] || null;
-
+            const isUnique = !!ref && ref.getText().indexOf('Unique<') === 0;
+            const refText = (isUnique
+            ? ref
+                ?.getText()
+                ?.replace(/^Unique</g, '')
+                ?.replace(/>$/g, '')
+              : ref?.getText()) ?? null;
+              
             // EntityPropertyDefinitionId
-            if (ref?.getText() === 'Id') {
+            if (refText === 'Id') {
               return {
                 isReference: false,
                 name: proreptyName,
@@ -68,8 +75,13 @@ export class TsMorphEntityDefinitionRepository
             const isArray = this.isArray(valueDeclaration);
 
             // EntityPropertyDefinitionPrimitive
-            if (!ref || ref.getText() === 'Date') {
-              const propertyType = this.decideTypeForPrimitive(
+            if (!refText
+              || refText === 'boolean'
+              || refText === 'number'
+              || refText === 'string'
+              || refText === 'Date'
+            ) {
+              const propertyType = refText ? this.primitiveTypeText(refText) : this.decideTypeForPrimitive(
                 valueDeclaration.getType(),
               );
               if (propertyType === null) {
@@ -87,6 +99,7 @@ export class TsMorphEntityDefinitionRepository
                 isReference: false,
                 name: proreptyName,
                 propertyType,
+                isUnique,
                 isNullable,
                 isArray,
                 acceptableValues,
@@ -94,7 +107,6 @@ export class TsMorphEntityDefinitionRepository
             }
 
             // EntityPropertyDefinitionReference
-            const isUnique = ref.getText().indexOf('Unique<') === 0;
             const propertyType = isUnique
               ? ref
                   .getText()
@@ -153,6 +165,14 @@ export class TsMorphEntityDefinitionRepository
       valueDeclaration.getDescendantsOfKind(SyntaxKind.ArrayType).length > 0
     );
   };
+  primitiveTypeText = (text: string): 'boolean' | 'number' | 'string' | 'Date' | null => {
+    if (
+      text === 'boolean' || text === 'number' || text === 'string' || text === 'Date'
+    ) {
+      return text;
+    }
+    return null;
+  }
   decideTypeForPrimitive = (
     type: ts.Type,
   ): 'boolean' | 'number' | 'string' | 'Date' | null => {
