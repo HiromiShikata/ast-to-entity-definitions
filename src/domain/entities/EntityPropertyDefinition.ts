@@ -10,7 +10,7 @@ export type EntityPropertyDefinitionId = {
 };
 export type EntityPropertyDefinitionPrimitive = {
   isReference: false;
-  propertyType: 'boolean' | 'number' | 'string' | 'Date';
+  propertyType: 'boolean' | 'number' | 'string' | 'Date' | 'struct';
   name: string;
   isUnique: boolean;
   isNullable: boolean;

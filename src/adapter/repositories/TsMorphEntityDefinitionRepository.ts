@@ -182,7 +182,7 @@ export class TsMorphEntityDefinitionRepository
   };
   decideTypeForPrimitive = (
     type: ts.Type,
-  ): 'boolean' | 'number' | 'string' | 'Date' | null => {
+  ): EntityPropertyDefinitionPrimitive['propertyType'] | null => {
     const mapTypeToTypeName = (
       t: ts.Type,
     ): EntityPropertyDefinitionPrimitive['propertyType'] | null => {
@@ -202,6 +202,8 @@ export class TsMorphEntityDefinitionRepository
         return 'string';
       } else if (t.getText() === 'Date') {
         return 'Date';
+      } else if (t.getText() === 'object') {
+        return 'struct';
       }
       return null;
     };
@@ -211,7 +213,7 @@ export class TsMorphEntityDefinitionRepository
     const reducedType = type
       .getUnionTypes()
       .filter((t) => !t.isNull() && !t.isUndefined())
-      .map((t): 'boolean' | 'number' | 'string' | 'Date' | null => {
+      .map<EntityPropertyDefinitionPrimitive['propertyType'] | null>((t) => {
         if (t.isBoolean() || t.isBooleanLiteral()) {
           return 'boolean';
         } else if (t.isNumber() || t.isNumberLiteral()) {
@@ -220,14 +222,13 @@ export class TsMorphEntityDefinitionRepository
           return 'string';
         } else if (t.getText() === 'Date') {
           return 'Date';
+        } else if (t.getText() === 'object') {
+          return 'struct';
         }
         return null;
       })
-      .reduce(
-        (
-          accumulator: ('boolean' | 'number' | 'string' | 'Date')[],
-          currentValue,
-        ) => {
+      .reduce<EntityPropertyDefinitionPrimitive['propertyType'][]>(
+        (accumulator, currentValue) => {
           if (currentValue !== null && !accumulator.includes(currentValue)) {
             accumulator.push(currentValue);
           }
