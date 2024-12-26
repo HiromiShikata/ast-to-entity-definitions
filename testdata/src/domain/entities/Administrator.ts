@@ -6,5 +6,6 @@ export type Administrator = {
   userId: User['id'];
   role: 'administrator';
   deactivated: boolean;
+  cachedDetail: object;
   createdAt: Date;
 };
