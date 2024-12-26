@@ -10,13 +10,13 @@ export type EntityPropertyDefinitionId = {
 };
 export type EntityPropertyDefinitionPrimitive = {
   isReference: false;
-  propertyType: 'boolean' | 'number' | 'string' | 'Date' | 'struct'
+  propertyType: 'boolean' | 'number' | 'string' | 'Date' | 'struct';
   name: string;
   isUnique: boolean;
   isNullable: boolean;
   isArray: boolean;
   acceptableValues: string[] | null;
-}
+};
 export type EntityPropertyDefinitionReferencedObject = {
   isReference: true;
   name: string;

@@ -228,10 +228,7 @@ export class TsMorphEntityDefinitionRepository
         return null;
       })
       .reduce<EntityPropertyDefinitionPrimitive['propertyType'][]>(
-        (
-          accumulator,
-          currentValue,
-        ) => {
+        (accumulator, currentValue) => {
           if (currentValue !== null && !accumulator.includes(currentValue)) {
             accumulator.push(currentValue);
           }
