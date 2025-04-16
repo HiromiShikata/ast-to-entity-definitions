@@ -93,16 +93,12 @@ export class TsMorphEntityDefinitionRepository
               propertyTypeDeclaration.union?.find(
                 (t) => t.indexedAccess?.index.typeText === "'id'",
               );
-            if (
-              unionedIdIndexedTypeDeclaration &&
-              unionedIdIndexedTypeDeclaration.indexedAccess
-            ) {
+            if (unionedIdIndexedTypeDeclaration?.indexedAccess) {
               return {
                 isReference: true,
                 name: proreptyName,
                 targetEntityDefinitionName:
-                  unionedIdIndexedTypeDeclaration.indexedAccess?.object
-                    .typeText,
+                  unionedIdIndexedTypeDeclaration.indexedAccess.object.typeText,
                 isUnique,
                 isNullable: isNullable,
               };

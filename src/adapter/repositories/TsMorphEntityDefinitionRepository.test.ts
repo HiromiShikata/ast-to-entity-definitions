@@ -358,6 +358,13 @@ describe('TsMorphEntityDefinitionRepository', () => {
         },
       ]);
     });
+
+    it('spits error', async () => {
+      const path = './testdata/src/domain/errors';
+      await expect(repository.find(path)).rejects.toThrow(
+        'Union types are not the same: string, number',
+      );
+    });
   });
   describe('isNullable', () => {
     it('success', async () => {
