@@ -2,6 +2,7 @@
 export type EntityPropertyDefinition =
   | EntityPropertyDefinitionId
   | EntityPropertyDefinitionPrimitive
+  | EntityPropertyDefinitionTypedStruct
   | EntityPropertyDefinitionReferencedObject;
 export type EntityPropertyDefinitionId = {
   isReference: false;
@@ -16,6 +17,15 @@ export type EntityPropertyDefinitionPrimitive = {
   isNullable: boolean;
   isArray: boolean;
   acceptableValues: string[] | null;
+};
+export type EntityPropertyDefinitionTypedStruct = {
+  isReference: false;
+  propertyType: 'typedStruct';
+  name: string;
+  structTypeName: string;
+  isUnique: boolean;
+  isNullable: boolean;
+  isArray: boolean;
 };
 export type EntityPropertyDefinitionReferencedObject = {
   isReference: true;
