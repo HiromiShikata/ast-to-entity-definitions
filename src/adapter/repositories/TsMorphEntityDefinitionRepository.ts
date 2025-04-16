@@ -60,7 +60,7 @@ export class TsMorphEntityDefinitionRepository
         const properties: EntityPropertyDefinition[] = typeDeclaration
           .getDescendantsOfKind(SyntaxKind.PropertySignature)
           .map((property): EntityPropertyDefinition | null => {
-            const proreptyName = property.getName();
+            const propertyName = property.getName();
             const propertyTypeDeclaration =
               this.getPropertyTypeDeclaration(property);
 
@@ -68,7 +68,7 @@ export class TsMorphEntityDefinitionRepository
             if (propertyTypeDeclaration.typeText === 'Id') {
               return {
                 isReference: false,
-                name: proreptyName,
+                name: propertyName,
                 propertyType: 'Id',
               };
             }
@@ -82,7 +82,7 @@ export class TsMorphEntityDefinitionRepository
             ) {
               return {
                 isReference: true,
-                name: proreptyName,
+                name: propertyName,
                 targetEntityDefinitionName:
                   propertyTypeDeclaration.indexedAccess.object.typeText,
                 isUnique,
@@ -96,7 +96,7 @@ export class TsMorphEntityDefinitionRepository
             if (unionedIdIndexedTypeDeclaration?.indexedAccess) {
               return {
                 isReference: true,
-                name: proreptyName,
+                name: propertyName,
                 targetEntityDefinitionName:
                   unionedIdIndexedTypeDeclaration.indexedAccess.object.typeText,
                 isUnique,
@@ -113,7 +113,7 @@ export class TsMorphEntityDefinitionRepository
               );
               return {
                 isReference: false,
-                name: proreptyName,
+                name: propertyName,
                 propertyType: primitiveTypeText,
                 isUnique,
                 isNullable,
@@ -123,7 +123,7 @@ export class TsMorphEntityDefinitionRepository
             }
             return {
               isReference: false,
-              name: proreptyName,
+              name: propertyName,
               propertyType: 'typedStruct',
               structTypeName: propertyTypeDeclaration.typeText,
               isUnique,
@@ -140,7 +140,7 @@ export class TsMorphEntityDefinitionRepository
   getGenericTypeNode = (
     typeDeclaration: ts.Node,
   ): { typeNameText: string; typeArgumentNode: ts.TypeNode } | null => {
-    // Generic typeの場合、annotationとみなす 例: Unique<string> => anottationText = Unique, typeParamsText = string
+    // For generic types, treat as annotation. Example: Unique<string> => annotationText = Unique, typeParamsText = string
     if (!typeDeclaration.isKind(SyntaxKind.TypeReference)) {
       return null;
     }
@@ -239,7 +239,9 @@ export class TsMorphEntityDefinitionRepository
   ): PropertyTypeDeclaration => {
     const typeDeclarationNode = propertySignature.getTypeNode();
     if (!typeDeclarationNode) {
-      throw new Error(`Type declaration node is null`);
+      throw new Error(
+        `Type declaration node is null for property signature: ${propertySignature.getText()}`,
+      );
     }
     const propertySignatureWithoutQuestionMark =
       this.getPropertyTypeDeclarationRecursively(typeDeclarationNode);
@@ -319,7 +321,9 @@ export class TsMorphEntityDefinitionRepository
       }
       if (unionTypes.filter((t) => t !== null).some((t) => t !== firstType)) {
         throw new Error(
-          `Union types are not the same: ${unionTypes.join(', ')}`,
+          `Union types are not the same for property: ${
+            propertyTypeDeclaration.node.getParent()?.getText() || 'unknown'
+          }, types: ${unionTypes.join(', ')}`,
         );
       }
       return firstType;

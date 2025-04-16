@@ -362,7 +362,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
     it('spits error', async () => {
       const path = './testdata/src/domain/errors';
       await expect(repository.find(path)).rejects.toThrow(
-        'Union types are not the same: string, number',
+        "Union types are not the same for property: invalidUnion: 'hoge' | 10;, types: string, number",
       );
     });
   });
