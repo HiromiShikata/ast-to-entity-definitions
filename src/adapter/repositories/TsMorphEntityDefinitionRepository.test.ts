@@ -1,7 +1,9 @@
 // ./src/adapter/repositories/TsMorphEntityDefinitionRepository.ts
-import { TsMorphEntityDefinitionRepository } from './TsMorphEntityDefinitionRepository';
 import * as ts from 'ts-morph';
-import type { Node } from 'ts-morph';
+import {
+  PropertyTypeDeclaration,
+  TsMorphEntityDefinitionRepository,
+} from './TsMorphEntityDefinitionRepository';
 import { EntityDefinition } from '../../domain/entities/EntityDefinition';
 
 describe('TsMorphEntityDefinitionRepository', () => {
@@ -113,6 +115,33 @@ describe('TsMorphEntityDefinitionRepository', () => {
               isArray: false,
               name: 'name',
               propertyType: 'string',
+            },
+            {
+              isArray: false,
+              isNullable: false,
+              isReference: false,
+              isUnique: false,
+              name: 'content',
+              propertyType: 'typedStruct',
+              structTypeName: 'Content',
+            },
+            {
+              isArray: false,
+              isNullable: false,
+              isReference: false,
+              isUnique: false,
+              name: 'unionedContent',
+              propertyType: 'typedStruct',
+              structTypeName: 'SubContentA | SubContentB',
+            },
+            {
+              isArray: false,
+              isNullable: false,
+              isReference: false,
+              isUnique: false,
+              name: 'combined',
+              propertyType: 'typedStruct',
+              structTypeName: 'Combined',
             },
           ],
         },
@@ -239,7 +268,7 @@ describe('TsMorphEntityDefinitionRepository', () => {
               propertyType: 'number',
             },
             {
-              acceptableValues: null,
+              acceptableValues: ['true'],
               isUnique: false,
               isNullable: false,
               isReference: false,
@@ -329,6 +358,13 @@ describe('TsMorphEntityDefinitionRepository', () => {
         },
       ]);
     });
+
+    it('spits error', async () => {
+      const path = './testdata/src/domain/errors';
+      await expect(repository.find(path)).rejects.toThrow(
+        "Union types are not the same for property: invalidUnion: 'hoge' | 10;, types: string, number",
+      );
+    });
   });
   describe('isNullable', () => {
     it('success', async () => {
@@ -338,17 +374,17 @@ describe('TsMorphEntityDefinitionRepository', () => {
       );
       const userAddressType = project
         .getSourceFiles()
-        .flatMap((s) => s.getTypeAliases())[0]
-        .getType();
-      userAddressType.getPropertyOrThrow('id');
+        .flatMap((s) => s.getTypeAliases())[0];
+      userAddressType.getType().getPropertyOrThrow('id');
 
-      const getPropertyType = (name: string): Node => {
-        const property = userAddressType.getPropertyOrThrow(name);
-        const valueDeclaration = property.getValueDeclaration();
-        if (!valueDeclaration) {
-          throw new Error(`valueDeclaration is undefined.`);
+      const getPropertyType = (name: string): PropertyTypeDeclaration => {
+        const property = userAddressType
+          .getDescendantsOfKind(ts.SyntaxKind.PropertySignature)
+          .find((p) => p.getName() === name);
+        if (!property) {
+          throw new Error(`Property ${name} not found.`);
         }
-        return valueDeclaration;
+        return repository.getPropertyTypeDeclaration(property);
       };
 
       expect(repository.isNullable(getPropertyType('id'))).toEqual(false);

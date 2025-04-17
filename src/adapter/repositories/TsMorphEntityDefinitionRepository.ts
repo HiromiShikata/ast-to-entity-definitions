@@ -8,6 +8,21 @@ import {
   EntityPropertyDefinition,
   EntityPropertyDefinitionPrimitive,
 } from '../../domain/entities/EntityPropertyDefinition';
+import { excludeNull } from '../../lib/collection';
+
+export type PropertyTypeDeclaration = {
+  hasQuestionMark: boolean;
+  annotationText: string | null;
+  isArray: boolean;
+  arrayElement: Omit<PropertyTypeDeclaration, 'hasQuestionMark'> | null;
+  union: Omit<PropertyTypeDeclaration, 'hasQuestionMark'>[] | null;
+  indexedAccess: {
+    index: Omit<PropertyTypeDeclaration, 'hasQuestionMark'>;
+    object: Omit<PropertyTypeDeclaration, 'hasQuestionMark'>;
+  } | null;
+  node: ts.Node;
+  typeText: string;
+};
 
 export class TsMorphEntityDefinitionRepository
   implements EntityDefinitionRepository
@@ -39,88 +54,81 @@ export class TsMorphEntityDefinitionRepository
       });
 
     const typeDefinitionAsts = typeDeclarations
-      .filter((t) => t.getType().isObject())
+      .filter((t) => t.getType().isObject() && t.isExported())
       .map((typeDeclaration) => {
         const entityName = typeDeclaration.getName();
         const properties: EntityPropertyDefinition[] = typeDeclaration
-          .getType()
-          .getProperties()
+          .getDescendantsOfKind(SyntaxKind.PropertySignature)
           .map((property): EntityPropertyDefinition | null => {
-            const proreptyName = property.getName();
-            const valueDeclaration = property.getValueDeclaration();
-            if (!valueDeclaration) {
-              return null;
-            }
-            const ref =
-              valueDeclaration.getDescendantsOfKind(
-                SyntaxKind.TypeReference,
-              )[0] || null;
-            const isUnique = !!ref && ref.getText().indexOf('Unique<') === 0;
-            const refText =
-              (isUnique
-                ? ref
-                    ?.getText()
-                    ?.replace(/^Unique</g, '')
-                    ?.replace(/>$/g, '')
-                : ref?.getText()) ?? null;
+            const propertyName = property.getName();
+            const propertyTypeDeclaration =
+              this.getPropertyTypeDeclaration(property);
 
             // EntityPropertyDefinitionId
-            if (refText === 'Id') {
+            if (propertyTypeDeclaration.typeText === 'Id') {
               return {
                 isReference: false,
-                name: proreptyName,
+                name: propertyName,
                 propertyType: 'Id',
               };
             }
-            const isNullable = this.isNullable(valueDeclaration);
-            const isArray = this.isArray(valueDeclaration);
+            const isUnique = this.isUnique(propertyTypeDeclaration);
+            const isNullable = this.isNullable(propertyTypeDeclaration);
+            const isArray = propertyTypeDeclaration.isArray;
 
-            // EntityPropertyDefinitionPrimitive
+            // EntityPropertyDefinitionReference
             if (
-              !refText ||
-              refText === 'boolean' ||
-              refText === 'number' ||
-              refText === 'string' ||
-              refText === 'Date'
+              propertyTypeDeclaration.indexedAccess?.index.typeText === "'id'"
             ) {
-              const propertyType = refText
-                ? this.primitiveTypeText(refText)
-                : this.decideTypeForPrimitive(valueDeclaration.getType());
-              if (propertyType === null) {
-                throw new Error(
-                  `unexpected type: ${valueDeclaration
-                    .getType()
-                    .getText()}, propertyName: ${proreptyName}, entityName: ${entityName}`,
-                );
-              }
-              const acceptableValues = this.extractAcceptableValues(
-                valueDeclaration.getType(),
+              return {
+                isReference: true,
+                name: propertyName,
+                targetEntityDefinitionName:
+                  propertyTypeDeclaration.indexedAccess.object.typeText,
+                isUnique,
+                isNullable: isNullable,
+              };
+            }
+            const unionedIdIndexedTypeDeclaration =
+              propertyTypeDeclaration.union?.find(
+                (t) => t.indexedAccess?.index.typeText === "'id'",
               );
-
+            if (unionedIdIndexedTypeDeclaration?.indexedAccess) {
+              return {
+                isReference: true,
+                name: propertyName,
+                targetEntityDefinitionName:
+                  unionedIdIndexedTypeDeclaration.indexedAccess.object.typeText,
+                isUnique,
+                isNullable: isNullable,
+              };
+            }
+            // EntityPropertyDefinitionPrimitive
+            const primitiveTypeText = this.decideTypeForPrimitive(
+              propertyTypeDeclaration,
+            );
+            if (primitiveTypeText) {
+              const acceptableValues = this.getAcceptableValues(
+                propertyTypeDeclaration,
+              );
               return {
                 isReference: false,
-                name: proreptyName,
-                propertyType,
+                name: propertyName,
+                propertyType: primitiveTypeText,
                 isUnique,
                 isNullable,
                 isArray,
                 acceptableValues,
               };
             }
-
-            // EntityPropertyDefinitionReference
-            const propertyType = isUnique
-              ? ref
-                  .getText()
-                  .replace(/^Unique</g, '')
-                  .replace(/\[.*?$/g, '')
-              : ref.getText();
             return {
-              isReference: true,
-              name: proreptyName,
-              targetEntityDefinitionName: propertyType,
+              isReference: false,
+              name: propertyName,
+              propertyType: 'typedStruct',
+              structTypeName: propertyTypeDeclaration.typeText,
               isUnique,
-              isNullable: isNullable,
+              isNullable,
+              isArray,
             };
           })
           .filter((item): item is EntityPropertyDefinition => item !== null);
@@ -129,43 +137,135 @@ export class TsMorphEntityDefinitionRepository
 
     return typeDefinitionAsts;
   }
-  extractAcceptableValues = (type: ts.Type): string[] | null => {
-    const literalValue = type.getLiteralValue();
-    if (literalValue) {
-      return [String(literalValue)];
-    }
-    if (!type.isUnion()) {
-      return null;
-    } else if (type.isBoolean()) {
+  getGenericTypeNode = (
+    typeDeclaration: ts.Node,
+  ): { typeNameText: string; typeArgumentNode: ts.TypeNode } | null => {
+    // For generic types, treat as annotation. Example: Unique<string> => annotationText = Unique, typeParamsText = string
+    if (!typeDeclaration.isKind(SyntaxKind.TypeReference)) {
       return null;
     }
-    return type
-      .getUnionTypes()
-      .filter((t) => !t.isNull() && !t.isUndefined() && t.isLiteral())
-      .map((t) => t.getText().replace(/"/g, ''));
+    const typeArgumentNode =
+      typeDeclaration?.getChildCount() > 0
+        ? typeDeclaration?.getTypeArguments()?.[0] ?? null
+        : null;
+    if (!typeArgumentNode) {
+      return null;
+    }
+    const typeNameText = typeArgumentNode
+      ? typeDeclaration?.getTypeName().getText() ?? null
+      : null;
+    if (!typeNameText) {
+      return null;
+    }
+    return {
+      typeNameText,
+      typeArgumentNode,
+    };
   };
+  getIndexedAccessTypeNode = (
+    typeDeclaration: ts.Node,
+  ): { indexTypeNode: ts.TypeNode; objectTypeNode: ts.TypeNode } | null => {
+    if (!typeDeclaration.isKind(SyntaxKind.IndexedAccessType)) {
+      return null;
+    }
+    const indexTypeNode = typeDeclaration.getIndexTypeNode();
+    const objectTypeNode = typeDeclaration.getObjectTypeNode();
+    return {
+      indexTypeNode,
+      objectTypeNode,
+    };
+  };
+  getPropertyTypeDeclarationRecursively = (
+    typeDeclarationNode: ts.Node,
+  ): Omit<PropertyTypeDeclaration, 'hasQuestionMark'> => {
+    const genericTypeNode = this.getGenericTypeNode(typeDeclarationNode);
+    const indexedAccessTypeNode = this.getIndexedAccessTypeNode(
+      genericTypeNode?.typeArgumentNode ?? typeDeclarationNode,
+    );
 
-  isNullable = (valueDeclaration: Node): boolean => {
-    if (
-      valueDeclaration.getChildrenOfKind(SyntaxKind.QuestionToken).length > 0
-    ) {
+    const targetTypeDeclaration =
+      genericTypeNode?.typeArgumentNode ??
+      indexedAccessTypeNode?.objectTypeNode ??
+      typeDeclarationNode;
+
+    const annotationText = genericTypeNode?.typeNameText ?? null;
+    const indexedAccess = indexedAccessTypeNode
+      ? {
+          index: this.getPropertyTypeDeclarationRecursively(
+            indexedAccessTypeNode.indexTypeNode,
+          ),
+          object: this.getPropertyTypeDeclarationRecursively(
+            indexedAccessTypeNode.objectTypeNode,
+          ),
+        }
+      : null;
+    const arrayElement = targetTypeDeclaration.isKind(SyntaxKind.ArrayType)
+      ? this.getPropertyTypeDeclarationRecursively(
+          targetTypeDeclaration.getElementTypeNode(),
+        )
+      : null;
+    const union: PropertyTypeDeclaration['union'] = excludeNull(
+      targetTypeDeclaration.isKind(SyntaxKind.UnionType)
+        ? targetTypeDeclaration.getTypeNodes().map((t) => {
+            return this.getPropertyTypeDeclarationRecursively(t);
+          })
+        : targetTypeDeclaration.isKind(SyntaxKind.LiteralType)
+        ? [
+            {
+              annotationText: null,
+              indexedAccess: null,
+              isArray: false,
+              arrayElement: null,
+              node: typeDeclarationNode,
+              typeText: typeDeclarationNode.getText(),
+              union: null,
+            },
+          ]
+        : [],
+    );
+    const typeText = targetTypeDeclaration.getText();
+    return {
+      annotationText,
+      indexedAccess,
+      union: union.length > 0 ? union : null,
+      isArray: !!arrayElement,
+      arrayElement,
+      node: targetTypeDeclaration,
+      typeText,
+    };
+  };
+  getPropertyTypeDeclaration = (
+    propertySignature: ts.PropertySignature,
+  ): PropertyTypeDeclaration => {
+    const typeDeclarationNode = propertySignature.getTypeNode();
+    if (!typeDeclarationNode) {
+      throw new Error(
+        `Type declaration node is null for property signature: ${propertySignature.getText()}`,
+      );
+    }
+    const propertySignatureWithoutQuestionMark =
+      this.getPropertyTypeDeclarationRecursively(typeDeclarationNode);
+    const hasQuestionMark = propertySignature.hasQuestionToken();
+    return {
+      ...propertySignatureWithoutQuestionMark,
+      hasQuestionMark,
+    };
+  };
+  isUnique = (propertyTypeDeclaration: PropertyTypeDeclaration): boolean => {
+    return propertyTypeDeclaration.annotationText === 'Unique';
+  };
+  isNullable = (propertyTypeDeclaration: PropertyTypeDeclaration): boolean => {
+    if (propertyTypeDeclaration.hasQuestionMark) {
       return true;
     }
-
-    const unionTypeNodes = valueDeclaration.getChildrenOfKind(
-      ts.SyntaxKind.UnionType,
+    return (
+      propertyTypeDeclaration.union?.some((t) => {
+        return t.node.getText() === 'null' || t.node.getText() === 'undefined';
+      }) ?? false
     );
-    if (unionTypeNodes.length <= 0) {
-      return false;
-    }
-    return !!unionTypeNodes[0]
-      .getTypeNodes()
-      .find((n) => n.getType().isNull() || n.getType().isUndefined());
   };
   isArray = (valueDeclaration: Node): boolean => {
-    return (
-      valueDeclaration.getDescendantsOfKind(SyntaxKind.ArrayType).length > 0
-    );
+    return valueDeclaration.isKind(SyntaxKind.ArrayType);
   };
   primitiveTypeText = (
     text: string,
@@ -180,65 +280,80 @@ export class TsMorphEntityDefinitionRepository
     }
     return null;
   };
-  decideTypeForPrimitive = (
-    type: ts.Type,
-  ): EntityPropertyDefinitionPrimitive['propertyType'] | null => {
-    const mapTypeToTypeName = (
-      t: ts.Type,
-    ): EntityPropertyDefinitionPrimitive['propertyType'] | null => {
-      if (t.isArray()) {
-        // extract element type of array
-        const getArrayElementType = t.getArrayElementType();
-        if (!getArrayElementType) {
-          return null;
-        }
-        return this.decideTypeForPrimitive(getArrayElementType);
-      }
-      if (t.isBoolean() || t.isBooleanLiteral()) {
-        return 'boolean';
-      } else if (t.isNumber() || t.isNumberLiteral()) {
-        return 'number';
-      } else if (t.isString() || t.isStringLiteral()) {
-        return 'string';
-      } else if (t.getText() === 'Date') {
-        return 'Date';
-      } else if (t.getText() === 'object') {
-        return 'struct';
-      }
-      return null;
-    };
-    if (!type.isUnion()) {
-      return mapTypeToTypeName(type);
-    }
-    const reducedType = type
-      .getUnionTypes()
-      .filter((t) => !t.isNull() && !t.isUndefined())
-      .map<EntityPropertyDefinitionPrimitive['propertyType'] | null>((t) => {
-        if (t.isBoolean() || t.isBooleanLiteral()) {
-          return 'boolean';
-        } else if (t.isNumber() || t.isNumberLiteral()) {
-          return 'number';
-        } else if (t.isString() || t.isStringLiteral()) {
-          return 'string';
-        } else if (t.getText() === 'Date') {
-          return 'Date';
-        } else if (t.getText() === 'object') {
-          return 'struct';
-        }
-        return null;
-      })
-      .reduce<EntityPropertyDefinitionPrimitive['propertyType'][]>(
-        (accumulator, currentValue) => {
-          if (currentValue !== null && !accumulator.includes(currentValue)) {
-            accumulator.push(currentValue);
+  getAcceptableValues = (
+    propertyTypeDeclaration: PropertyTypeDeclaration,
+  ): string[] | null => {
+    if (
+      propertyTypeDeclaration.union &&
+      propertyTypeDeclaration.union.length > 0
+    ) {
+      const unionTypeTexts = excludeNull(
+        propertyTypeDeclaration.union.map((t) => {
+          if (!t.node.isKind(SyntaxKind.LiteralType)) {
+            return null;
           }
-          return accumulator;
-        },
-        [],
+          const text = t.node.getText().replace(/'/g, '');
+          if (text === 'null' || text === 'undefined') {
+            return null;
+          }
+          return text;
+        }),
       );
-    if (reducedType.length != 1) {
-      return null;
+      if (unionTypeTexts.length > 0) {
+        return unionTypeTexts;
+      }
     }
-    return reducedType[0];
+    return null;
+  };
+  decideTypeForPrimitive = (
+    propertyTypeDeclaration: Omit<PropertyTypeDeclaration, 'hasQuestionMark'>,
+  ): EntityPropertyDefinitionPrimitive['propertyType'] | null => {
+    if (
+      propertyTypeDeclaration.union &&
+      propertyTypeDeclaration.union.length > 0
+    ) {
+      const unionTypes = propertyTypeDeclaration.union.map((t) => {
+        return this.decideTypeForPrimitive(t);
+      });
+      const firstType = unionTypes[0];
+      if (!firstType) {
+        return null;
+      }
+      if (unionTypes.filter((t) => t !== null).some((t) => t !== firstType)) {
+        throw new Error(
+          `Union types are not the same for property: ${
+            propertyTypeDeclaration.node.getParent()?.getText() || 'unknown'
+          }, types: ${unionTypes.join(', ')}`,
+        );
+      }
+      return firstType;
+    }
+    if (
+      propertyTypeDeclaration.isArray &&
+      propertyTypeDeclaration.arrayElement
+    ) {
+      return this.decideTypeForPrimitive(propertyTypeDeclaration.arrayElement);
+    }
+    if (
+      propertyTypeDeclaration.node.getType().isBoolean() ||
+      propertyTypeDeclaration.node.getType().isBooleanLiteral()
+    ) {
+      return 'boolean';
+    } else if (
+      propertyTypeDeclaration.node.getType().isNumber() ||
+      propertyTypeDeclaration.node.getType().isNumberLiteral()
+    ) {
+      return 'number';
+    } else if (
+      propertyTypeDeclaration.node.getType().isString() ||
+      propertyTypeDeclaration.node.getType().isStringLiteral()
+    ) {
+      return 'string';
+    } else if (propertyTypeDeclaration.node.getText() === 'Date') {
+      return 'Date';
+    } else if (propertyTypeDeclaration.node.getText() === 'object') {
+      return 'struct';
+    }
+    return null;
   };
 }
