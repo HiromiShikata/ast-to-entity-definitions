@@ -365,7 +365,153 @@ describe('TsMorphEntityDefinitionRepository', () => {
         "Union types are not the same for property: invalidUnion: 'hoge' | 10;, types: string, number",
       );
     });
+
+    // 追加: 判別子 Foo['type'] から acceptableValues を抽出できること
+    it("extracts acceptableValues from discriminant via Foo['type']", async () => {
+      const path = './testdata/src/domain/type_reference/Discriminant.ts';
+      const result = await repository.find(path);
+
+      const msg = result.find((e) => e.name === 'Discriminant');
+      if (!msg) {
+        throw new Error('Discriminant not found');
+      }
+
+      // contentType が string で、判別子 'type' のリテラル列挙を acceptableValues に持つ
+      expect(msg).toEqual({
+        name: 'Discriminant',
+        properties: [
+          {
+            isReference: false,
+            name: 'id',
+            propertyType: 'Id',
+          },
+          {
+            acceptableValues: null,
+            isUnique: false,
+            isNullable: false,
+            isReference: false,
+            isArray: false,
+            name: 'userId',
+            propertyType: 'string',
+          },
+          {
+            acceptableValues: ['typeA', 'typeB', 'typeC'],
+            isUnique: false,
+            isNullable: false,
+            isReference: false,
+            isArray: false,
+            name: 'contentType',
+            propertyType: 'string',
+          },
+          {
+            isArray: false,
+            isNullable: false,
+            isReference: false,
+            isUnique: false,
+            name: 'commonAttribute',
+            propertyType: 'typedStruct',
+            structTypeName: 'CommonAttributes',
+          },
+          {
+            isArray: false,
+            isNullable: false,
+            isReference: false,
+            isUnique: false,
+            name: 'content',
+            propertyType: 'typedStruct',
+            structTypeName: 'DiscriminantContent',
+          },
+          {
+            acceptableValues: null,
+            isUnique: false,
+            isNullable: false,
+            isReference: false,
+            isArray: false,
+            name: 'createdAt',
+            propertyType: 'Date',
+          },
+          {
+            acceptableValues: null,
+            isUnique: false,
+            isNullable: false,
+            isReference: false,
+            isArray: false,
+            name: 'updatedAt',
+            propertyType: 'Date',
+          },
+        ],
+      });
+    });
+
+    it('flattens intersection/extends for UsecaseTable* types', async () => {
+      const path = './testdata/src/domain/type_reference/Intersection.ts';
+      const result = await repository.find(path);
+
+      expect(result).toEqual([
+        {
+          name: 'Intersection',
+          properties: [
+            { isReference: false, name: 'id', propertyType: 'Id' },
+            {
+              acceptableValues: null,
+              isUnique: false,
+              isNullable: false,
+              isReference: false,
+              isArray: false,
+              name: 'fileId',
+              propertyType: 'string',
+            },
+            {
+              acceptableValues: null,
+              isUnique: false,
+              isNullable: false,
+              isReference: false,
+              isArray: true,
+              name: 'chunkIds',
+              propertyType: 'string',
+            },
+            {
+              acceptableValues: null,
+              isUnique: false,
+              isNullable: false,
+              isReference: false,
+              isArray: false,
+              name: 'strStacks',
+              propertyType: 'struct',
+            },
+            {
+              acceptableValues: null,
+              isUnique: false,
+              isNullable: false,
+              isReference: false,
+              isArray: false,
+              name: 'year',
+              propertyType: 'number',
+            },
+            {
+              isArray: false,
+              isNullable: false,
+              isReference: false,
+              isUnique: false,
+              name: 'content',
+              propertyType: 'typedStruct',
+              structTypeName: 'IntersectionContent',
+            },
+            {
+              acceptableValues: null,
+              isArray: false,
+              isNullable: true,
+              isReference: false,
+              isUnique: false,
+              name: 'nameType',
+              propertyType: 'string',
+            },
+          ],
+        },
+      ]);
+    });
   });
+
   describe('isNullable', () => {
     it('success', async () => {
       const project = new ts.Project();
