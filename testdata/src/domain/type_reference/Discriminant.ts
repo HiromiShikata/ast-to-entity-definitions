@@ -29,7 +29,7 @@ export type DiscriminantContentTypeC = {
 export type DiscriminantContent =
   | DiscriminantContentTypeA
   | DiscriminantContentTypeB
-  | DiscriminantContentTypeC
+  | DiscriminantContentTypeC;
 
 //
 // 本体

@@ -47,10 +47,12 @@ export class TsMorphEntityDefinitionRepository
       throw new Error('Invalid path');
     }
 
-    const targets = this.project.getSourceFiles().flatMap((sf) => [
-      ...sf.getTypeAliases().filter((t) => t.isExported()),
-      ...sf.getInterfaces().filter((i) => i.isExported()),
-    ]);
+    const targets = this.project
+      .getSourceFiles()
+      .flatMap((sf) => [
+        ...sf.getTypeAliases().filter((t) => t.isExported()),
+        ...sf.getInterfaces().filter((i) => i.isExported()),
+      ]);
 
     const typeDefinitionAsts: EntityDefinition[] = targets
       .filter((decl) => this.declRepresentsObjectLike(decl))
@@ -63,7 +65,11 @@ export class TsMorphEntityDefinitionRepository
 
             // Id
             if (typeDecl.typeText === 'Id') {
-              return { isReference: false, name: propertyName, propertyType: 'Id' };
+              return {
+                isReference: false,
+                name: propertyName,
+                propertyType: 'Id',
+              };
             }
 
             const isUnique = this.isUnique(typeDecl);
@@ -75,7 +81,8 @@ export class TsMorphEntityDefinitionRepository
               return {
                 isReference: true,
                 name: propertyName,
-                targetEntityDefinitionName: typeDecl.indexedAccess.object.typeText,
+                targetEntityDefinitionName:
+                  typeDecl.indexedAccess.object.typeText,
                 isUnique,
                 isNullable,
               };
@@ -87,7 +94,8 @@ export class TsMorphEntityDefinitionRepository
               return {
                 isReference: true,
                 name: propertyName,
-                targetEntityDefinitionName: unionedId.indexedAccess.object.typeText,
+                targetEntityDefinitionName:
+                  unionedId.indexedAccess.object.typeText,
                 isUnique,
                 isNullable,
               };
@@ -95,17 +103,20 @@ export class TsMorphEntityDefinitionRepository
 
             // IndexedAccessType の処理（例: DiscriminantContent['type']）
             if (typeDecl.indexedAccess) {
-              const resolvedTypeDecl = this.resolveIndexedAccessTypeToPropertyTypeDeclaration(
-                typeDecl.indexedAccess,
-              );
+              const resolvedTypeDecl =
+                this.resolveIndexedAccessTypeToPropertyTypeDeclaration(
+                  typeDecl.indexedAccess,
+                );
               if (resolvedTypeDecl) {
                 // 解決された型から既存のロジックで判定
                 const resolvedNullable = this.isNullable(resolvedTypeDecl);
                 const resolvedArray = resolvedTypeDecl.isArray;
-                const primitiveType = this.decideTypeForPrimitive(resolvedTypeDecl);
-                
+                const primitiveType =
+                  this.decideTypeForPrimitive(resolvedTypeDecl);
+
                 if (primitiveType) {
-                  const acceptableValues = this.getAcceptableValues(resolvedTypeDecl);
+                  const acceptableValues =
+                    this.getAcceptableValues(resolvedTypeDecl);
                   return {
                     isReference: false,
                     name: propertyName,
@@ -116,7 +127,7 @@ export class TsMorphEntityDefinitionRepository
                     acceptableValues,
                   };
                 }
-                
+
                 // 構造体の場合
                 return {
                   isReference: false,
@@ -191,7 +202,9 @@ export class TsMorphEntityDefinitionRepository
 
     const pushUnique = (ps: ts.PropertySignature[]) => {
       for (const p of ps) {
-        const key = `${p.getName()}@${p.getSourceFile().getFilePath()}:${p.getStartLineNumber()}`;
+        const key = `${p.getName()}@${p
+          .getSourceFile()
+          .getFilePath()}:${p.getStartLineNumber()}`;
         if (!seen.has(key)) {
           seen.add(key);
           out.push(p);
@@ -207,7 +220,8 @@ export class TsMorphEntityDefinitionRepository
         const expr = ext.getExpression();
         if (Node.isIdentifier(expr)) {
           const target = this.lookupAliasOrInterfaceByName(expr.getText());
-          if (target) pushUnique(this.collectFlattenedPropertySignatures(target));
+          if (target)
+            pushUnique(this.collectFlattenedPropertySignatures(target));
         }
       }
       return out;
@@ -225,7 +239,7 @@ export class TsMorphEntityDefinitionRepository
         return;
       }
       if (node.isKind(SyntaxKind.IntersectionType)) {
-        (node).getTypeNodes().forEach(rec);
+        node.getTypeNodes().forEach(rec);
         return;
       }
       if (node.isKind(SyntaxKind.TypeReference)) {
@@ -267,10 +281,10 @@ export class TsMorphEntityDefinitionRepository
     if (!typeDeclaration.isKind(SyntaxKind.TypeReference)) return null;
     const typeArgumentNode =
       typeDeclaration?.getChildCount() > 0
-        ? (typeDeclaration)?.getTypeArguments()?.[0] ?? null
+        ? typeDeclaration?.getTypeArguments()?.[0] ?? null
         : null;
     if (!typeArgumentNode) return null;
-    const typeNameText = (typeDeclaration).getTypeName().getText();
+    const typeNameText = typeDeclaration.getTypeName().getText();
     if (!typeNameText) return null;
     return { typeNameText, typeArgumentNode };
   };
@@ -296,7 +310,7 @@ export class TsMorphEntityDefinitionRepository
     const targetTypeDeclaration =
       genericTypeNode?.typeArgumentNode ??
       indexedAccessTypeNode?.objectTypeNode ??
-      (typeDeclarationNode);
+      typeDeclarationNode;
 
     const annotationText = genericTypeNode?.typeNameText ?? null;
 
@@ -313,13 +327,13 @@ export class TsMorphEntityDefinitionRepository
 
     const arrayElement = targetTypeDeclaration.isKind(SyntaxKind.ArrayType)
       ? this.getPropertyTypeDeclarationRecursively(
-          (targetTypeDeclaration).getElementTypeNode(),
+          targetTypeDeclaration.getElementTypeNode(),
         )
       : null;
 
     const union: PropertyTypeDeclaration['union'] = excludeNull(
       targetTypeDeclaration.isKind(SyntaxKind.UnionType)
-        ? (targetTypeDeclaration).getTypeNodes().map((t) => {
+        ? targetTypeDeclaration.getTypeNodes().map((t) => {
             return this.getPropertyTypeDeclarationRecursively(t);
           })
         : targetTypeDeclaration.isKind(SyntaxKind.LiteralType)
@@ -359,7 +373,8 @@ export class TsMorphEntityDefinitionRepository
         `Type declaration node is null for property signature: ${propertySignature.getText()}`,
       );
     }
-    const base = this.getPropertyTypeDeclarationRecursively(typeDeclarationNode);
+    const base =
+      this.getPropertyTypeDeclarationRecursively(typeDeclarationNode);
     const hasQuestionMark = propertySignature.hasQuestionToken();
     return { ...base, hasQuestionMark };
   };
@@ -386,7 +401,12 @@ export class TsMorphEntityDefinitionRepository
   primitiveTypeText = (
     text: string,
   ): 'boolean' | 'number' | 'string' | 'Date' | null => {
-    if (text === 'boolean' || text === 'number' || text === 'string' || text === 'Date') {
+    if (
+      text === 'boolean' ||
+      text === 'number' ||
+      text === 'string' ||
+      text === 'Date'
+    ) {
       return text;
     }
     return null;
@@ -395,7 +415,10 @@ export class TsMorphEntityDefinitionRepository
   getAcceptableValues = (
     propertyTypeDeclaration: PropertyTypeDeclaration,
   ): string[] | null => {
-    if (propertyTypeDeclaration.union && propertyTypeDeclaration.union.length > 0) {
+    if (
+      propertyTypeDeclaration.union &&
+      propertyTypeDeclaration.union.length > 0
+    ) {
       const unionTypeTexts = excludeNull(
         propertyTypeDeclaration.union.map((t) => {
           if (!t.node.isKind(SyntaxKind.LiteralType)) return null;
@@ -412,7 +435,10 @@ export class TsMorphEntityDefinitionRepository
   decideTypeForPrimitive = (
     propertyTypeDeclaration: Omit<PropertyTypeDeclaration, 'hasQuestionMark'>,
   ): EntityPropertyDefinitionPrimitive['propertyType'] | null => {
-    if (propertyTypeDeclaration.union && propertyTypeDeclaration.union.length > 0) {
+    if (
+      propertyTypeDeclaration.union &&
+      propertyTypeDeclaration.union.length > 0
+    ) {
       const unionTypes = propertyTypeDeclaration.union.map((t) => {
         return this.decideTypeForPrimitive(t);
       });
@@ -427,7 +453,10 @@ export class TsMorphEntityDefinitionRepository
       }
       return firstType;
     }
-    if (propertyTypeDeclaration.isArray && propertyTypeDeclaration.arrayElement) {
+    if (
+      propertyTypeDeclaration.isArray &&
+      propertyTypeDeclaration.arrayElement
+    ) {
       return this.decideTypeForPrimitive(propertyTypeDeclaration.arrayElement);
     }
     const nt = propertyTypeDeclaration.node.getType();
@@ -439,16 +468,14 @@ export class TsMorphEntityDefinitionRepository
     return null;
   };
 
-  private resolveIndexedAccessTypeToPropertyTypeDeclaration(
-    indexedAccess: {
-      index: Omit<PropertyTypeDeclaration, 'hasQuestionMark'>;
-      object: Omit<PropertyTypeDeclaration, 'hasQuestionMark'>;
-    },
-  ): PropertyTypeDeclaration | null {
+  private resolveIndexedAccessTypeToPropertyTypeDeclaration(indexedAccess: {
+    index: Omit<PropertyTypeDeclaration, 'hasQuestionMark'>;
+    object: Omit<PropertyTypeDeclaration, 'hasQuestionMark'>;
+  }): PropertyTypeDeclaration | null {
     // インデックスからプロパティ名を取得（例: 'type', 'common', 'name'）
     const indexText = indexedAccess.index.typeText.replace(/['"]/g, '');
     const objectTypeName = indexedAccess.object.typeText;
-    
+
     // オブジェクト型を解決
     const objectType = this.lookupAliasOrInterfaceByName(objectTypeName);
     if (!objectType) return null;
@@ -461,14 +488,15 @@ export class TsMorphEntityDefinitionRepository
       // TypeLiteral の場合、直接プロパティを探す
       if (tn.isKind(SyntaxKind.TypeLiteral)) {
         const props = tn.getMembers().filter(Node.isPropertySignature);
-        const targetProp = props.find(p => p.getName() === indexText);
-        
+        const targetProp = props.find((p) => p.getName() === indexText);
+
         if (targetProp) {
           const propTypeNode = targetProp.getTypeNode();
           if (!propTypeNode) return null;
-          
+
           // プロパティの型を解析して PropertyTypeDeclaration を生成
-          const propTypeDecl = this.getPropertyTypeDeclarationRecursively(propTypeNode);
+          const propTypeDecl =
+            this.getPropertyTypeDeclarationRecursively(propTypeNode);
           // hasQuestionMark を追加
           return {
             ...propTypeDecl,
@@ -476,7 +504,7 @@ export class TsMorphEntityDefinitionRepository
           };
         }
       }
-      
+
       // ユニオン型の場合（判別子の処理）
       if (tn.isKind(SyntaxKind.UnionType)) {
         // ユニオンの各メンバーから指定プロパティの値を収集
@@ -484,16 +512,16 @@ export class TsMorphEntityDefinitionRepository
         let hasQuestionMark = false;
         let commonTypeNode: ts.TypeNode | null = null;
         let commonTypeName: string | null = null;
-        
+
         for (const memberNode of tn.getTypeNodes()) {
           const memberProps = this.getPropertiesFromTypeNode(memberNode);
-          const targetProp = memberProps.find(p => p.getName() === indexText);
-          
+          const targetProp = memberProps.find((p) => p.getName() === indexText);
+
           if (targetProp) {
             hasQuestionMark = hasQuestionMark || targetProp.hasQuestionToken();
             const propTypeNode = targetProp.getTypeNode();
             if (!propTypeNode) continue;
-            
+
             // リテラル型の場合、値を収集
             if (propTypeNode.isKind(SyntaxKind.LiteralType)) {
               const value = propTypeNode.getText().replace(/['"]/g, '');
@@ -514,7 +542,9 @@ export class TsMorphEntityDefinitionRepository
             }
             // TypeReference の場合（共通の型）
             else if (propTypeNode.isKind(SyntaxKind.TypeReference)) {
-              const refName = (propTypeNode as ts.TypeReferenceNode).getTypeName().getText();
+              const refName = (propTypeNode)
+                .getTypeName()
+                .getText();
               if (!commonTypeName || commonTypeName === refName) {
                 commonTypeName = refName;
                 commonTypeNode = propTypeNode;
@@ -522,17 +552,20 @@ export class TsMorphEntityDefinitionRepository
             }
           }
         }
-        
+
         // リテラル値が収集できた場合、PropertyTypeDeclaration を生成
         if (values.size > 0) {
           // リテラルのユニオンを表す PropertyTypeDeclaration を作成
-          const literalNodes = Array.from(values).map(value => {
+          const literalNodes = Array.from(values).map((value) => {
             // 仮想的なノードを作成（実際のノードではないが、型判定のために必要）
             const project = new ts.Project();
-            const sourceFile = project.createSourceFile('temp.ts', `type T = '${value}';`);
+            const sourceFile = project.createSourceFile(
+              'temp.ts',
+              `type T = '${value}';`,
+            );
             const typeAlias = sourceFile.getTypeAliasOrThrow('T');
             const literalNode = typeAlias.getTypeNodeOrThrow();
-            
+
             return {
               annotationText: null,
               indexedAccess: null,
@@ -543,7 +576,7 @@ export class TsMorphEntityDefinitionRepository
               union: null,
             };
           });
-          
+
           return {
             hasQuestionMark,
             annotationText: null,
@@ -552,13 +585,19 @@ export class TsMorphEntityDefinitionRepository
             union: literalNodes.length > 0 ? literalNodes : null,
             indexedAccess: null,
             node: literalNodes[0].node,
-            typeText: values.size === 1 ? `'${Array.from(values)[0]}'` : Array.from(values).map(v => `'${v}'`).join(' | '),
+            typeText:
+              values.size === 1
+                ? `'${Array.from(values)[0]}'`
+                : Array.from(values)
+                    .map((v) => `'${v}'`)
+                    .join(' | '),
           };
         }
-        
+
         // 共通の型が見つかった場合
         if (commonTypeNode && commonTypeName) {
-          const propTypeDecl = this.getPropertyTypeDeclarationRecursively(commonTypeNode);
+          const propTypeDecl =
+            this.getPropertyTypeDeclarationRecursively(commonTypeNode);
           return {
             ...propTypeDecl,
             hasQuestionMark,
@@ -566,7 +605,7 @@ export class TsMorphEntityDefinitionRepository
         }
       }
     }
-    
+
     return null;
   }
 
@@ -583,7 +622,7 @@ export class TsMorphEntityDefinitionRepository
     // インデックスからプロパティ名を取得（例: 'type', 'common', 'name'）
     const indexText = indexedAccess.index.typeText.replace(/['"]/g, '');
     const objectTypeName = indexedAccess.object.typeText;
-    
+
     // オブジェクト型を解決
     const objectType = this.lookupAliasOrInterfaceByName(objectTypeName);
     if (!objectType) return null;
@@ -596,30 +635,31 @@ export class TsMorphEntityDefinitionRepository
       // TypeLiteral の場合、直接プロパティを探す
       if (tn.isKind(SyntaxKind.TypeLiteral)) {
         const props = tn.getMembers().filter(Node.isPropertySignature);
-        const targetProp = props.find(p => p.getName() === indexText);
-        
+        const targetProp = props.find((p) => p.getName() === indexText);
+
         if (targetProp) {
           const propTypeNode = targetProp.getTypeNode();
           if (!propTypeNode) return null;
-          
+
           // プロパティの型を解析
-          const propTypeDecl = this.getPropertyTypeDeclarationRecursively(propTypeNode);
-          
+          const propTypeDecl =
+            this.getPropertyTypeDeclarationRecursively(propTypeNode);
+
           // Union型（string | null など）の処理
           if (propTypeDecl.union) {
             // null/undefined を除いたユニオンメンバーを取得
             const nonNullMembers = propTypeDecl.union.filter(
-              t => t.typeText !== 'null' && t.typeText !== 'undefined'
+              (t) => t.typeText !== 'null' && t.typeText !== 'undefined',
             );
-            
+
             // nullable の判定
             const hasNull = propTypeDecl.union.some(
-              t => t.typeText === 'null' || t.typeText === 'undefined'
+              (t) => t.typeText === 'null' || t.typeText === 'undefined',
             );
-            
+
             // リテラル型の収集
             const literalValues = excludeNull(
-              propTypeDecl.union.map(t => {
+              propTypeDecl.union.map((t) => {
                 if (t.node.isKind(SyntaxKind.LiteralType)) {
                   const text = t.typeText.replace(/['"]/g, '');
                   if (text !== 'null' && text !== 'undefined') {
@@ -627,26 +667,30 @@ export class TsMorphEntityDefinitionRepository
                   }
                 }
                 return null;
-              })
+              }),
             );
-            
+
             // プリミティブ型の判定
             if (nonNullMembers.length > 0) {
-              const primitiveType = this.decideTypeForPrimitive(nonNullMembers[0]);
+              const primitiveType = this.decideTypeForPrimitive(
+                nonNullMembers[0],
+              );
               if (primitiveType) {
                 return {
                   isReference: false,
                   name: propertyName,
                   propertyType: primitiveType,
                   isUnique,
-                  isNullable: isNullable || hasNull || targetProp.hasQuestionToken(),
+                  isNullable:
+                    isNullable || hasNull || targetProp.hasQuestionToken(),
                   isArray,
-                  acceptableValues: literalValues.length > 0 ? literalValues : null,
+                  acceptableValues:
+                    literalValues.length > 0 ? literalValues : null,
                 };
               }
             }
           }
-          
+
           // プリミティブ型の処理
           const primitiveType = this.decideTypeForPrimitive(propTypeDecl);
           if (primitiveType) {
@@ -660,10 +704,12 @@ export class TsMorphEntityDefinitionRepository
               acceptableValues: null,
             };
           }
-          
+
           // オブジェクト型の処理
           if (propTypeNode.isKind(SyntaxKind.TypeReference)) {
-            const refName = (propTypeNode as ts.TypeReferenceNode).getTypeName().getText();
+            const refName = (propTypeNode)
+              .getTypeName()
+              .getText();
             return {
               isReference: false,
               name: propertyName,
@@ -676,21 +722,21 @@ export class TsMorphEntityDefinitionRepository
           }
         }
       }
-      
+
       // ユニオン型の場合（判別子の処理）
       if (tn.isKind(SyntaxKind.UnionType)) {
         // ユニオンの各メンバーから指定プロパティの値を収集
         const values = new Set<string>();
         let commonStructType: string | null = null;
-        
+
         for (const memberNode of tn.getTypeNodes()) {
           const memberProps = this.getPropertiesFromTypeNode(memberNode);
-          const targetProp = memberProps.find(p => p.getName() === indexText);
-          
+          const targetProp = memberProps.find((p) => p.getName() === indexText);
+
           if (targetProp) {
             const propTypeNode = targetProp.getTypeNode();
             if (!propTypeNode) continue;
-            
+
             // リテラル型の場合、値を収集
             if (propTypeNode.isKind(SyntaxKind.LiteralType)) {
               const value = propTypeNode.getText().replace(/['"]/g, '');
@@ -711,14 +757,16 @@ export class TsMorphEntityDefinitionRepository
             }
             // オブジェクト型の場合
             else if (propTypeNode.isKind(SyntaxKind.TypeReference)) {
-              const refName = (propTypeNode as ts.TypeReferenceNode).getTypeName().getText();
+              const refName = (propTypeNode)
+                .getTypeName()
+                .getText();
               if (!commonStructType) {
                 commonStructType = refName;
               }
             }
           }
         }
-        
+
         // リテラル値が収集できた場合
         if (values.size > 0) {
           return {
@@ -731,7 +779,7 @@ export class TsMorphEntityDefinitionRepository
             acceptableValues: Array.from(values),
           };
         }
-        
+
         // 共通のオブジェクト型が見つかった場合
         if (commonStructType) {
           return {
@@ -746,13 +794,13 @@ export class TsMorphEntityDefinitionRepository
         }
       }
     }
-    
+
     return null;
   }
 
   private getPropertiesFromTypeNode(node: ts.TypeNode): ts.PropertySignature[] {
     const props: ts.PropertySignature[] = [];
-    
+
     if (node.isKind(SyntaxKind.TypeLiteral)) {
       props.push(...node.getMembers().filter(Node.isPropertySignature));
     } else if (node.isKind(SyntaxKind.TypeReference)) {
@@ -765,20 +813,25 @@ export class TsMorphEntityDefinitionRepository
         props.push(...this.getPropertiesFromTypeNode(t));
       }
     }
-    
+
     return props;
   }
 
   // ------------------- ['type'] の列挙 -------------------
 
   private tryExtractDiscriminantValuesFromIndexedAccess(
-    propertyTypeDeclaration: PropertyTypeDeclaration | Omit<PropertyTypeDeclaration, 'hasQuestionMark'>,
+    propertyTypeDeclaration:
+      | PropertyTypeDeclaration
+      | Omit<PropertyTypeDeclaration, 'hasQuestionMark'>,
   ): string[] | null {
     if (propertyTypeDeclaration.indexedAccess?.index.typeText === "'type'") {
       const objectText = propertyTypeDeclaration.indexedAccess.object.typeText;
       return this.extractDiscriminantValuesFromTypeName(objectText);
     }
-    if (propertyTypeDeclaration.union && propertyTypeDeclaration.union.length > 0) {
+    if (
+      propertyTypeDeclaration.union &&
+      propertyTypeDeclaration.union.length > 0
+    ) {
       const merged = propertyTypeDeclaration.union.flatMap((t) => {
         const v = this.tryExtractDiscriminantValuesFromIndexedAccess(t);
         return v ?? [];
@@ -788,12 +841,18 @@ export class TsMorphEntityDefinitionRepository
     return null;
   }
 
-  private extractDiscriminantValuesFromTypeName(typeName: string): string[] | null {
+  private extractDiscriminantValuesFromTypeName(
+    typeName: string,
+  ): string[] | null {
     const root = this.lookupAliasOrInterfaceByName(typeName);
     if (!root) return null;
 
     // ユニオンの各メンバーへ展開
-    const members: (ts.TypeLiteralNode | ts.TypeAliasDeclaration | ts.InterfaceDeclaration)[] = [];
+    const members: (
+      | ts.TypeLiteralNode
+      | ts.TypeAliasDeclaration
+      | ts.InterfaceDeclaration
+    )[] = [];
 
     if (Node.isTypeAliasDeclaration(root)) {
       const tn = root.getTypeNode();
@@ -816,7 +875,10 @@ export class TsMorphEntityDefinitionRepository
             });
           }
         }
-      } else if (tn.isKind(SyntaxKind.TypeLiteral) || tn.isKind(SyntaxKind.IntersectionType)) {
+      } else if (
+        tn.isKind(SyntaxKind.TypeLiteral) ||
+        tn.isKind(SyntaxKind.IntersectionType)
+      ) {
         members.push(root);
       }
     } else if (Node.isInterfaceDeclaration(root)) {
@@ -827,7 +889,7 @@ export class TsMorphEntityDefinitionRepository
 
     for (const m of members) {
       const props = Node.isTypeLiteral(m)
-        ? (m).getMembers().filter(Node.isPropertySignature)
+        ? m.getMembers().filter(Node.isPropertySignature)
         : this.collectFlattenedPropertySignatures(m);
 
       const typeProp = props.find((p) => p.getName() === 'type');
@@ -841,7 +903,7 @@ export class TsMorphEntityDefinitionRepository
           const text = n.getText().replace(/['"]/g, '');
           if (text && text !== 'null' && text !== 'undefined') out.add(text);
         } else if (n.isKind(SyntaxKind.UnionType)) {
-          (n).getTypeNodes().forEach(collectFromNode);
+          n.getTypeNodes().forEach(collectFromNode);
         }
       };
 
