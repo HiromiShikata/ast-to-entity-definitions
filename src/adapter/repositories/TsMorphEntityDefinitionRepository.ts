@@ -542,9 +542,7 @@ export class TsMorphEntityDefinitionRepository
             }
             // TypeReference の場合（共通の型）
             else if (propTypeNode.isKind(SyntaxKind.TypeReference)) {
-              const refName = (propTypeNode)
-                .getTypeName()
-                .getText();
+              const refName = propTypeNode.getTypeName().getText();
               if (!commonTypeName || commonTypeName === refName) {
                 commonTypeName = refName;
                 commonTypeNode = propTypeNode;
@@ -707,9 +705,7 @@ export class TsMorphEntityDefinitionRepository
 
           // オブジェクト型の処理
           if (propTypeNode.isKind(SyntaxKind.TypeReference)) {
-            const refName = (propTypeNode)
-              .getTypeName()
-              .getText();
+            const refName = propTypeNode.getTypeName().getText();
             return {
               isReference: false,
               name: propertyName,
@@ -757,9 +753,7 @@ export class TsMorphEntityDefinitionRepository
             }
             // オブジェクト型の場合
             else if (propTypeNode.isKind(SyntaxKind.TypeReference)) {
-              const refName = (propTypeNode)
-                .getTypeName()
-                .getText();
+              const refName = propTypeNode.getTypeName().getText();
               if (!commonStructType) {
                 commonStructType = refName;
               }
