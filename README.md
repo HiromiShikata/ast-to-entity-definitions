@@ -90,22 +90,22 @@ This project follows the [Conventional Commits](https://www.conventionalcommits.
 
 ### Available Types
 
-| Type | Description | Example |
-|------|-------------|---------|
-| `feat` | A new feature | `feat: add new entity parser` |
-| `fix` | A bug fix | `fix: resolve type inference issue` |
-| `docs` | Documentation only changes | `docs: update README examples` |
-| `style` | Changes that do not affect the meaning of the code | `style: fix indentation` |
-| `refactor` | A code change that neither fixes a bug nor adds a feature | `refactor: extract utility function` |
-| `perf` | A code change that improves performance | `perf: optimize AST parsing` |
-| `test` | Adding missing tests or correcting existing tests | `test: add unit tests for repository` |
-| `build` | Changes that affect the build system or external dependencies | `build: update typescript version` |
-| `ci` | Changes to CI configuration files and scripts | `ci: add new workflow` |
-| `chore` | Other changes that don't modify src or test files | `chore: update dependencies` |
-| `revert` | Reverts a previous commit | `revert: revert feat: add parser` |
-| `autogen` | Auto-generated code changes | `autogen: update generated types` |
-| `prep` | Preparation work | `prep: setup project structure` |
-| `adapt` | Adaptation or adjustment changes | `adapt: adjust for new API` |
+| Type       | Description                                                   | Example                               |
+| ---------- | ------------------------------------------------------------- | ------------------------------------- |
+| `feat`     | A new feature                                                 | `feat: add new entity parser`         |
+| `fix`      | A bug fix                                                     | `fix: resolve type inference issue`   |
+| `docs`     | Documentation only changes                                    | `docs: update README examples`        |
+| `style`    | Changes that do not affect the meaning of the code            | `style: fix indentation`              |
+| `refactor` | A code change that neither fixes a bug nor adds a feature     | `refactor: extract utility function`  |
+| `perf`     | A code change that improves performance                       | `perf: optimize AST parsing`          |
+| `test`     | Adding missing tests or correcting existing tests             | `test: add unit tests for repository` |
+| `build`    | Changes that affect the build system or external dependencies | `build: update typescript version`    |
+| `ci`       | Changes to CI configuration files and scripts                 | `ci: add new workflow`                |
+| `chore`    | Other changes that don't modify src or test files             | `chore: update dependencies`          |
+| `revert`   | Reverts a previous commit                                     | `revert: revert feat: add parser`     |
+| `autogen`  | Auto-generated code changes                                   | `autogen: update generated types`     |
+| `prep`     | Preparation work                                              | `prep: setup project structure`       |
+| `adapt`    | Adaptation or adjustment changes                              | `adapt: adjust for new API`           |
 
 ### Examples
 
@@ -132,6 +132,7 @@ This project uses GitHub Actions to check that pull requests are properly linked
 **How to link your PR to an issue (choose one method):**
 
 1. **In your PR description** (recommended), include one of these keywords followed by the issue number:
+
    ```
    Fixes #123
    Closes #456
@@ -139,6 +140,7 @@ This project uses GitHub Actions to check that pull requests are properly linked
    ```
 
 2. **OR in your commit messages**:
+
    ```bash
    feat: add new parser functionality
 
@@ -152,14 +154,16 @@ This project uses GitHub Actions to check that pull requests are properly linked
 **Note:** You only need to use ONE of these methods to link your PR to an issue.
 
 **Supported linking keywords:**
+
 - `Fixes #issue-number` - Links and closes the issue when PR is merged
-- `Closes #issue-number` - Links and closes the issue when PR is merged  
+- `Closes #issue-number` - Links and closes the issue when PR is merged
 - `Resolves #issue-number` - Links and closes the issue when PR is merged
 - `Fix #issue-number` - Links and closes the issue when PR is merged
 - `Close #issue-number` - Links and closes the issue when PR is merged
 - `Resolve #issue-number` - Links and closes the issue when PR is merged
 
 **For reference only (doesn't close the issue):**
+
 - `Refs #issue-number`
 - `References #issue-number`
 - `See #issue-number`
