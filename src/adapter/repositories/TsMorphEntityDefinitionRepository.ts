@@ -75,7 +75,10 @@ export class TsMorphEntityDefinitionRepository
             const isNullable = this.isNullable(typeDecl);
             const isArray = typeDecl.isArray;
 
-            if (typeDecl.indexedAccess?.index.typeText === "'id'") {
+            if (
+              typeDecl.indexedAccess &&
+              this.isReferencePropertyByTypeDeclaration(typeDecl)
+            ) {
               return {
                 isReference: true,
                 name: propertyName,
@@ -85,8 +88,8 @@ export class TsMorphEntityDefinitionRepository
                 isNullable,
               };
             }
-            const unionedId = typeDecl.union?.find(
-              (t) => t.indexedAccess?.index.typeText === "'id'",
+            const unionedId = typeDecl.union?.find((t) =>
+              this.isReferencePropertyByTypeDeclaration(t),
             );
             if (unionedId?.indexedAccess) {
               return {
@@ -683,4 +686,9 @@ export class TsMorphEntityDefinitionRepository
 
     return out.size > 0 ? Array.from(out) : null;
   }
+  isReferencePropertyByTypeDeclaration = (
+    typeDecl: Omit<PropertyTypeDeclaration, 'hasQuestionMark'>,
+  ): boolean => {
+    return typeDecl.indexedAccess?.index.typeText.replace(/['"]/g, '') === 'id';
+  };
 }

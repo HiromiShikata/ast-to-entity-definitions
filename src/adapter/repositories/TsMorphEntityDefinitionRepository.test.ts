@@ -560,4 +560,34 @@ describe('TsMorphEntityDefinitionRepository', () => {
       ).toEqual(false);
     });
   });
+  describe('isReferencePropertyByTypeDeclaration', () => {
+    it.each([
+      { typeText: "User['id']", expected: true },
+      { typeText: 'User["id"]', expected: true },
+      { typeText: 'User | undefined', expected: false },
+      { typeText: 'User["test"]', expected: false },
+    ])(
+      'returns $expected for type declaration $typeText',
+      ({ typeText, expected }: { typeText: string; expected: boolean }) => {
+        // return typeDecl.indexedAccess?.index.typeText === "'id'"
+        const project = new ts.Project();
+        const sourceFile = project.createSourceFile(
+          'Temp.ts',
+          `type Temp = { user: ${typeText} }`,
+          { overwrite: true },
+        );
+        const typeAlias = sourceFile.getTypeAliases()[0];
+        const property = typeAlias
+          ?.getDescendantsOfKind(ts.SyntaxKind.PropertySignature)
+          .find((p) => p.getName() === 'user');
+        if (!property) {
+          throw new Error('Property user not found.');
+        }
+        const propertyType = repository.getPropertyTypeDeclaration(property);
+        expect(
+          repository.isReferencePropertyByTypeDeclaration(propertyType),
+        ).toBe(expected);
+      },
+    );
+  });
 });
