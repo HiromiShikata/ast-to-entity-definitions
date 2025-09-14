@@ -65,6 +65,6 @@
   "dependencies": {
     "commander": "^14.0.0",
     "rimraf": "^6.0.0",
-    "ts-morph": "^26.0.0"
+    "ts-morph": "^27.0.0"
   }
 }
