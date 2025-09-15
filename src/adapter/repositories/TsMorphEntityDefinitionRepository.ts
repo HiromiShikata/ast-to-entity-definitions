@@ -63,7 +63,6 @@ export class TsMorphEntityDefinitionRepository
             const propertyName = property.getName();
             const typeDecl = this.getPropertyTypeDeclaration(property);
 
-            // Id
             if (typeDecl.typeText === 'Id') {
               return {
                 isReference: false,
@@ -76,8 +75,10 @@ export class TsMorphEntityDefinitionRepository
             const isNullable = this.isNullable(typeDecl);
             const isArray = typeDecl.isArray;
 
-            // Foo['id'] or (... | Foo['id'])
-            if (typeDecl.indexedAccess?.index.typeText === "'id'") {
+            if (
+              typeDecl.indexedAccess &&
+              this.isReferencePropertyByTypeDeclaration(typeDecl)
+            ) {
               return {
                 isReference: true,
                 name: propertyName,
@@ -87,8 +88,8 @@ export class TsMorphEntityDefinitionRepository
                 isNullable,
               };
             }
-            const unionedId = typeDecl.union?.find(
-              (t) => t.indexedAccess?.index.typeText === "'id'",
+            const unionedId = typeDecl.union?.find((t) =>
+              this.isReferencePropertyByTypeDeclaration(t),
             );
             if (unionedId?.indexedAccess) {
               return {
@@ -101,14 +102,12 @@ export class TsMorphEntityDefinitionRepository
               };
             }
 
-            // IndexedAccessType の処理（例: DiscriminantContent['type']）
             if (typeDecl.indexedAccess) {
               const resolvedTypeDecl =
                 this.resolveIndexedAccessTypeToPropertyTypeDeclaration(
                   typeDecl.indexedAccess,
                 );
               if (resolvedTypeDecl) {
-                // 解決された型から既存のロジックで判定
                 const resolvedNullable = this.isNullable(resolvedTypeDecl);
                 const resolvedArray = resolvedTypeDecl.isArray;
                 const primitiveType =
@@ -128,7 +127,6 @@ export class TsMorphEntityDefinitionRepository
                   };
                 }
 
-                // 構造体の場合
                 return {
                   isReference: false,
                   name: propertyName,
@@ -141,7 +139,6 @@ export class TsMorphEntityDefinitionRepository
               }
             }
 
-            // プリミティブ
             const primitiveTypeText = this.decideTypeForPrimitive(typeDecl);
             if (primitiveTypeText) {
               const acceptableValues = this.getAcceptableValues(typeDecl);
@@ -156,7 +153,6 @@ export class TsMorphEntityDefinitionRepository
               };
             }
 
-            // 構造体
             return {
               isReference: false,
               name: propertyName,
@@ -175,8 +171,6 @@ export class TsMorphEntityDefinitionRepository
     return typeDefinitionAsts;
   }
 
-  // ------------------- 宣言/型のヘルパ（isKindで判定） -------------------
-
   private declRepresentsObjectLike(
     decl: ts.TypeAliasDeclaration | ts.InterfaceDeclaration,
   ): boolean {
@@ -185,7 +179,7 @@ export class TsMorphEntityDefinitionRepository
     if (!tn) return false;
 
     if (tn.isKind(SyntaxKind.TypeLiteral)) return true;
-    if (tn.isKind(SyntaxKind.IntersectionType)) return true; // A & B & { ... }
+    if (tn.isKind(SyntaxKind.IntersectionType)) return true;
     if (tn.isKind(SyntaxKind.TypeReference)) {
       const ref = this.resolveTypeReferenceNode(tn);
       return !!ref && this.declRepresentsObjectLike(ref);
@@ -193,7 +187,6 @@ export class TsMorphEntityDefinitionRepository
     return false;
   }
 
-  /** 交差型・extends・型参照をフラット化して PropertySignature を列挙 */
   private collectFlattenedPropertySignatures(
     decl: ts.TypeAliasDeclaration | ts.InterfaceDeclaration,
   ): ts.PropertySignature[] {
@@ -213,9 +206,7 @@ export class TsMorphEntityDefinitionRepository
     };
 
     if (Node.isInterfaceDeclaration(decl)) {
-      // 自身
       pushUnique(decl.getProperties());
-      // extends
       for (const ext of decl.getExtends()) {
         const expr = ext.getExpression();
         if (Node.isIdentifier(expr)) {
@@ -227,7 +218,6 @@ export class TsMorphEntityDefinitionRepository
       return out;
     }
 
-    // type alias
     const tn = decl.getTypeNode();
     if (!tn) return out;
 
@@ -247,7 +237,6 @@ export class TsMorphEntityDefinitionRepository
         if (target) pushUnique(this.collectFlattenedPropertySignatures(target));
         return;
       }
-      // その他（ジェネリクス/関数型など）は対応しない
     };
 
     rec(tn);
@@ -272,8 +261,6 @@ export class TsMorphEntityDefinitionRepository
     }
     return null;
   }
-
-  // ------------------- PropertyTypeDeclaration 生成 -------------------
 
   getGenericTypeNode = (
     typeDeclaration: ts.Node,
@@ -379,8 +366,6 @@ export class TsMorphEntityDefinitionRepository
     return { ...base, hasQuestionMark };
   };
 
-  // ------------------- 既存ロジック -------------------
-
   isUnique = (propertyTypeDeclaration: PropertyTypeDeclaration): boolean => {
     return propertyTypeDeclaration.annotationText === 'Unique';
   };
@@ -472,20 +457,16 @@ export class TsMorphEntityDefinitionRepository
     index: Omit<PropertyTypeDeclaration, 'hasQuestionMark'>;
     object: Omit<PropertyTypeDeclaration, 'hasQuestionMark'>;
   }): PropertyTypeDeclaration | null {
-    // インデックスからプロパティ名を取得（例: 'type', 'common', 'name'）
     const indexText = indexedAccess.index.typeText.replace(/['"]/g, '');
     const objectTypeName = indexedAccess.object.typeText;
 
-    // オブジェクト型を解決
     const objectType = this.lookupAliasOrInterfaceByName(objectTypeName);
     if (!objectType) return null;
 
-    // type alias の場合、その定義を展開
     if (Node.isTypeAliasDeclaration(objectType)) {
       const tn = objectType.getTypeNode();
       if (!tn) return null;
 
-      // TypeLiteral の場合、直接プロパティを探す
       if (tn.isKind(SyntaxKind.TypeLiteral)) {
         const props = tn.getMembers().filter(Node.isPropertySignature);
         const targetProp = props.find((p) => p.getName() === indexText);
@@ -494,10 +475,8 @@ export class TsMorphEntityDefinitionRepository
           const propTypeNode = targetProp.getTypeNode();
           if (!propTypeNode) return null;
 
-          // プロパティの型を解析して PropertyTypeDeclaration を生成
           const propTypeDecl =
             this.getPropertyTypeDeclarationRecursively(propTypeNode);
-          // hasQuestionMark を追加
           return {
             ...propTypeDecl,
             hasQuestionMark: targetProp.hasQuestionToken(),
@@ -505,9 +484,7 @@ export class TsMorphEntityDefinitionRepository
         }
       }
 
-      // ユニオン型の場合（判別子の処理）
       if (tn.isKind(SyntaxKind.UnionType)) {
-        // ユニオンの各メンバーから指定プロパティの値を収集
         const values = new Set<string>();
         let hasQuestionMark = false;
         let commonTypeNode: ts.TypeNode | null = null;
@@ -522,15 +499,12 @@ export class TsMorphEntityDefinitionRepository
             const propTypeNode = targetProp.getTypeNode();
             if (!propTypeNode) continue;
 
-            // リテラル型の場合、値を収集
             if (propTypeNode.isKind(SyntaxKind.LiteralType)) {
               const value = propTypeNode.getText().replace(/['"]/g, '');
               if (value && value !== 'null' && value !== 'undefined') {
                 values.add(value);
               }
-            }
-            // ユニオン型の場合、各リテラルを収集
-            else if (propTypeNode.isKind(SyntaxKind.UnionType)) {
+            } else if (propTypeNode.isKind(SyntaxKind.UnionType)) {
               for (const unionMember of propTypeNode.getTypeNodes()) {
                 if (unionMember.isKind(SyntaxKind.LiteralType)) {
                   const value = unionMember.getText().replace(/['"]/g, '');
@@ -539,9 +513,7 @@ export class TsMorphEntityDefinitionRepository
                   }
                 }
               }
-            }
-            // TypeReference の場合（共通の型）
-            else if (propTypeNode.isKind(SyntaxKind.TypeReference)) {
+            } else if (propTypeNode.isKind(SyntaxKind.TypeReference)) {
               const refName = propTypeNode.getTypeName().getText();
               if (!commonTypeName || commonTypeName === refName) {
                 commonTypeName = refName;
@@ -551,11 +523,8 @@ export class TsMorphEntityDefinitionRepository
           }
         }
 
-        // リテラル値が収集できた場合、PropertyTypeDeclaration を生成
         if (values.size > 0) {
-          // リテラルのユニオンを表す PropertyTypeDeclaration を作成
           const literalNodes = Array.from(values).map((value) => {
-            // 仮想的なノードを作成（実際のノードではないが、型判定のために必要）
             const project = new ts.Project();
             const sourceFile = project.createSourceFile(
               'temp.ts',
@@ -592,198 +561,12 @@ export class TsMorphEntityDefinitionRepository
           };
         }
 
-        // 共通の型が見つかった場合
         if (commonTypeNode && commonTypeName) {
           const propTypeDecl =
             this.getPropertyTypeDeclarationRecursively(commonTypeNode);
           return {
             ...propTypeDecl,
             hasQuestionMark,
-          };
-        }
-      }
-    }
-
-    return null;
-  }
-
-  private resolveIndexedAccessType(
-    indexedAccess: {
-      index: Omit<PropertyTypeDeclaration, 'hasQuestionMark'>;
-      object: Omit<PropertyTypeDeclaration, 'hasQuestionMark'>;
-    },
-    propertyName: string,
-    isUnique: boolean,
-    isNullable: boolean,
-    isArray: boolean,
-  ): EntityPropertyDefinition | null {
-    // インデックスからプロパティ名を取得（例: 'type', 'common', 'name'）
-    const indexText = indexedAccess.index.typeText.replace(/['"]/g, '');
-    const objectTypeName = indexedAccess.object.typeText;
-
-    // オブジェクト型を解決
-    const objectType = this.lookupAliasOrInterfaceByName(objectTypeName);
-    if (!objectType) return null;
-
-    // type alias の場合、その定義を展開
-    if (Node.isTypeAliasDeclaration(objectType)) {
-      const tn = objectType.getTypeNode();
-      if (!tn) return null;
-
-      // TypeLiteral の場合、直接プロパティを探す
-      if (tn.isKind(SyntaxKind.TypeLiteral)) {
-        const props = tn.getMembers().filter(Node.isPropertySignature);
-        const targetProp = props.find((p) => p.getName() === indexText);
-
-        if (targetProp) {
-          const propTypeNode = targetProp.getTypeNode();
-          if (!propTypeNode) return null;
-
-          // プロパティの型を解析
-          const propTypeDecl =
-            this.getPropertyTypeDeclarationRecursively(propTypeNode);
-
-          // Union型（string | null など）の処理
-          if (propTypeDecl.union) {
-            // null/undefined を除いたユニオンメンバーを取得
-            const nonNullMembers = propTypeDecl.union.filter(
-              (t) => t.typeText !== 'null' && t.typeText !== 'undefined',
-            );
-
-            // nullable の判定
-            const hasNull = propTypeDecl.union.some(
-              (t) => t.typeText === 'null' || t.typeText === 'undefined',
-            );
-
-            // リテラル型の収集
-            const literalValues = excludeNull(
-              propTypeDecl.union.map((t) => {
-                if (t.node.isKind(SyntaxKind.LiteralType)) {
-                  const text = t.typeText.replace(/['"]/g, '');
-                  if (text !== 'null' && text !== 'undefined') {
-                    return text;
-                  }
-                }
-                return null;
-              }),
-            );
-
-            // プリミティブ型の判定
-            if (nonNullMembers.length > 0) {
-              const primitiveType = this.decideTypeForPrimitive(
-                nonNullMembers[0],
-              );
-              if (primitiveType) {
-                return {
-                  isReference: false,
-                  name: propertyName,
-                  propertyType: primitiveType,
-                  isUnique,
-                  isNullable:
-                    isNullable || hasNull || targetProp.hasQuestionToken(),
-                  isArray,
-                  acceptableValues:
-                    literalValues.length > 0 ? literalValues : null,
-                };
-              }
-            }
-          }
-
-          // プリミティブ型の処理
-          const primitiveType = this.decideTypeForPrimitive(propTypeDecl);
-          if (primitiveType) {
-            return {
-              isReference: false,
-              name: propertyName,
-              propertyType: primitiveType,
-              isUnique,
-              isNullable: isNullable || targetProp.hasQuestionToken(),
-              isArray,
-              acceptableValues: null,
-            };
-          }
-
-          // オブジェクト型の処理
-          if (propTypeNode.isKind(SyntaxKind.TypeReference)) {
-            const refName = propTypeNode.getTypeName().getText();
-            return {
-              isReference: false,
-              name: propertyName,
-              propertyType: 'typedStruct',
-              structTypeName: refName,
-              isUnique,
-              isNullable: isNullable || targetProp.hasQuestionToken(),
-              isArray,
-            };
-          }
-        }
-      }
-
-      // ユニオン型の場合（判別子の処理）
-      if (tn.isKind(SyntaxKind.UnionType)) {
-        // ユニオンの各メンバーから指定プロパティの値を収集
-        const values = new Set<string>();
-        let commonStructType: string | null = null;
-
-        for (const memberNode of tn.getTypeNodes()) {
-          const memberProps = this.getPropertiesFromTypeNode(memberNode);
-          const targetProp = memberProps.find((p) => p.getName() === indexText);
-
-          if (targetProp) {
-            const propTypeNode = targetProp.getTypeNode();
-            if (!propTypeNode) continue;
-
-            // リテラル型の場合、値を収集
-            if (propTypeNode.isKind(SyntaxKind.LiteralType)) {
-              const value = propTypeNode.getText().replace(/['"]/g, '');
-              if (value && value !== 'null' && value !== 'undefined') {
-                values.add(value);
-              }
-            }
-            // ユニオン型の場合、各リテラルを収集
-            else if (propTypeNode.isKind(SyntaxKind.UnionType)) {
-              for (const unionMember of propTypeNode.getTypeNodes()) {
-                if (unionMember.isKind(SyntaxKind.LiteralType)) {
-                  const value = unionMember.getText().replace(/['"]/g, '');
-                  if (value && value !== 'null' && value !== 'undefined') {
-                    values.add(value);
-                  }
-                }
-              }
-            }
-            // オブジェクト型の場合
-            else if (propTypeNode.isKind(SyntaxKind.TypeReference)) {
-              const refName = propTypeNode.getTypeName().getText();
-              if (!commonStructType) {
-                commonStructType = refName;
-              }
-            }
-          }
-        }
-
-        // リテラル値が収集できた場合
-        if (values.size > 0) {
-          return {
-            isReference: false,
-            name: propertyName,
-            propertyType: 'string',
-            isUnique,
-            isNullable,
-            isArray,
-            acceptableValues: Array.from(values),
-          };
-        }
-
-        // 共通のオブジェクト型が見つかった場合
-        if (commonStructType) {
-          return {
-            isReference: false,
-            name: propertyName,
-            propertyType: 'typedStruct',
-            structTypeName: commonStructType,
-            isUnique,
-            isNullable,
-            isArray,
           };
         }
       }
@@ -810,8 +593,6 @@ export class TsMorphEntityDefinitionRepository
 
     return props;
   }
-
-  // ------------------- ['type'] の列挙 -------------------
 
   private tryExtractDiscriminantValuesFromIndexedAccess(
     propertyTypeDeclaration:
@@ -841,7 +622,6 @@ export class TsMorphEntityDefinitionRepository
     const root = this.lookupAliasOrInterfaceByName(typeName);
     if (!root) return null;
 
-    // ユニオンの各メンバーへ展開
     const members: (
       | ts.TypeLiteralNode
       | ts.TypeAliasDeclaration
@@ -906,4 +686,9 @@ export class TsMorphEntityDefinitionRepository
 
     return out.size > 0 ? Array.from(out) : null;
   }
+  isReferencePropertyByTypeDeclaration = (
+    typeDecl: Omit<PropertyTypeDeclaration, 'hasQuestionMark'>,
+  ): boolean => {
+    return typeDecl.indexedAccess?.index.typeText.replace(/['"]/g, '') === 'id';
+  };
 }
