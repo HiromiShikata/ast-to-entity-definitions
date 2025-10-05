@@ -279,6 +279,133 @@ describe('GetDefinitionByPathUseCase', () => {
         directoryPath,
       );
     });
+
+    it('excludes specified type names when excludeTypeNames option is provided', async () => {
+      const directoryPath = '/example/directory/path';
+      const allEntityDefinitions: EntityDefinition[] = [
+        {
+          name: 'User',
+          properties: [
+            {
+              name: 'id',
+              propertyType: 'string',
+              isReference: false,
+              isUnique: false,
+              isNullable: false,
+              isArray: false,
+              acceptableValues: null,
+            },
+          ],
+        },
+        {
+          name: 'Group',
+          properties: [
+            {
+              name: 'id',
+              propertyType: 'string',
+              isReference: false,
+              isUnique: false,
+              isNullable: false,
+              isArray: false,
+              acceptableValues: null,
+            },
+          ],
+        },
+        {
+          name: 'UserGroup',
+          properties: [
+            {
+              name: 'id',
+              propertyType: 'string',
+              isReference: false,
+              isUnique: false,
+              isNullable: false,
+              isArray: false,
+              acceptableValues: null,
+            },
+          ],
+        },
+      ];
+
+      const expectedEntityDefinitions: EntityDefinition[] = [
+        {
+          name: 'User',
+          properties: [
+            {
+              name: 'id',
+              propertyType: 'string',
+              isReference: false,
+              isUnique: false,
+              isNullable: false,
+              isArray: false,
+              acceptableValues: null,
+            },
+          ],
+        },
+      ];
+
+      const { useCase, entityDefinitionRepository } =
+        createUseCaseAndMockRepositories();
+      entityDefinitionRepository.find.mockResolvedValueOnce(
+        allEntityDefinitions,
+      );
+      const result = await useCase.run(directoryPath, {
+        excludeTypeNames: ['Group', 'UserGroup'],
+      });
+
+      expect(result).toEqual(expectedEntityDefinitions);
+      expect(entityDefinitionRepository.find).toHaveBeenCalledWith(
+        directoryPath,
+      );
+    });
+
+    it('returns all definitions when excludeTypeNames is empty array', async () => {
+      const directoryPath = '/example/directory/path';
+      const allEntityDefinitions: EntityDefinition[] = [
+        {
+          name: 'User',
+          properties: [
+            {
+              name: 'id',
+              propertyType: 'string',
+              isReference: false,
+              isUnique: false,
+              isNullable: false,
+              isArray: false,
+              acceptableValues: null,
+            },
+          ],
+        },
+        {
+          name: 'Group',
+          properties: [
+            {
+              name: 'id',
+              propertyType: 'string',
+              isReference: false,
+              isUnique: false,
+              isNullable: false,
+              isArray: false,
+              acceptableValues: null,
+            },
+          ],
+        },
+      ];
+
+      const { useCase, entityDefinitionRepository } =
+        createUseCaseAndMockRepositories();
+      entityDefinitionRepository.find.mockResolvedValueOnce(
+        allEntityDefinitions,
+      );
+      const result = await useCase.run(directoryPath, {
+        excludeTypeNames: [],
+      });
+
+      expect(result).toEqual(allEntityDefinitions);
+      expect(entityDefinitionRepository.find).toHaveBeenCalledWith(
+        directoryPath,
+      );
+    });
   });
   const createUseCaseAndMockRepositories = () => {
     const entityDefinitionRepository = createMockEntityDefinitionRepository();
