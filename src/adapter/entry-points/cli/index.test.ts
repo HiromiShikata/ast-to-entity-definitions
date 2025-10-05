@@ -350,4 +350,45 @@ describe('commander program', () => {
       },
     ]);
   });
+
+  it('should exclude types specified in config file', () => {
+    const output = execSync(
+      'npx ts-node ./src/adapter/entry-points/cli/index.ts ./testdata/src/domain/entities --config ./testdata/ast-to-entity-definitions.json',
+    ).toString();
+
+    const parsedOutput = JSON.parse(output) as EntityDefinition[]; // eslint-disable-line no-type-assertion/no-type-assertion
+
+    // Administrator and Item types should be excluded based on config file
+    const administratorEntity = parsedOutput.find(
+      (entity) => entity.name === 'Administrator',
+    );
+    expect(administratorEntity).toBeUndefined();
+
+    const itemEntity = parsedOutput.find((entity) => entity.name === 'Item');
+    expect(itemEntity).toBeUndefined();
+
+    // Other entities should still be present
+    const userEntity = parsedOutput.find((entity) => entity.name === 'User');
+    expect(userEntity).toBeDefined();
+
+    const groupEntity = parsedOutput.find((entity) => entity.name === 'Group');
+    expect(groupEntity).toBeDefined();
+  });
+
+  it('should work without config file (backward compatibility)', () => {
+    const output = execSync(
+      'npx ts-node ./src/adapter/entry-points/cli/index.ts ./testdata/src/domain/entities',
+    ).toString();
+
+    const parsedOutput = JSON.parse(output) as EntityDefinition[]; // eslint-disable-line no-type-assertion/no-type-assertion
+
+    // All entities should be present
+    const administratorEntity = parsedOutput.find(
+      (entity) => entity.name === 'Administrator',
+    );
+    expect(administratorEntity).toBeDefined();
+
+    const itemEntity = parsedOutput.find((entity) => entity.name === 'Item');
+    expect(itemEntity).toBeDefined();
+  });
 });

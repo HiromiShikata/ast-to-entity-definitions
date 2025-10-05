@@ -1,6 +1,15 @@
-import { GetDefinitionByPathUseCase } from '../../../domain/usecases/GetDefinitionByPathUseCase';
+import {
+  GetDefinitionByPathUseCase,
+  GetDefinitionByPathOptions,
+} from '../../../domain/usecases/GetDefinitionByPathUseCase';
 import { TsMorphEntityDefinitionRepository } from '../../repositories/TsMorphEntityDefinitionRepository';
 
-export const getEntityDefinitions = new GetDefinitionByPathUseCase(
-  new TsMorphEntityDefinitionRepository(),
-).run;
+export const getEntityDefinitions = (
+  directoryPath: string,
+  options?: GetDefinitionByPathOptions,
+) => {
+  const useCase = new GetDefinitionByPathUseCase(
+    new TsMorphEntityDefinitionRepository(),
+  );
+  return useCase.run(directoryPath, options);
+};
