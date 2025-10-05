@@ -12,17 +12,18 @@ const isValidConfigFile = (obj: unknown): obj is ConfigFile => {
   if (typeof obj !== 'object' || obj === null) {
     return false;
   }
-  const config = obj as Record<string, unknown>;
-  
-  if (config.excludeTypeNames !== undefined) {
-    if (!Array.isArray(config.excludeTypeNames)) {
+  if (!('excludeTypeNames' in obj)) {
+    return false;
+  }
+  if (obj.excludeTypeNames !== undefined) {
+    if (!Array.isArray(obj.excludeTypeNames)) {
       return false;
     }
-    if (!config.excludeTypeNames.every((item) => typeof item === 'string')) {
+    if (!obj.excludeTypeNames.every((item) => typeof item === 'string')) {
       return false;
     }
   }
-  
+
   return true;
 };
 

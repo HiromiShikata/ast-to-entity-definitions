@@ -17,12 +17,10 @@ export class GetDefinitionByPathUseCase {
       directoryPath,
     );
 
-    if (options?.excludeTypeNames && options.excludeTypeNames.length > 0) {
-      return entityDefinitions.filter(
-        (def) => !options.excludeTypeNames!.includes(def.name),
-      );
-    }
-
-    return entityDefinitions;
+    return entityDefinitions.filter(
+      (def) =>
+        !options?.excludeTypeNames ||
+        !options.excludeTypeNames.includes(def.name),
+    );
   };
 }
