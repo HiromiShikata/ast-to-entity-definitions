@@ -1,5 +1,5 @@
 import { EntityDefinition } from '../../entities/EntityDefinition';
 
 export interface EntityDefinitionRepository {
-  find(path: string): Promise<EntityDefinition[]>;
+  find(filePaths: string[]): Promise<EntityDefinition[]>;
 }

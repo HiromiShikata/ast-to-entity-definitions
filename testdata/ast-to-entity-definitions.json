@@ -1,3 +1,4 @@
 {
-  "excludeTypeNames": ["Administrator", "Item"]
+  "excludeTypeNames": ["Administrator", "Item"],
+  "excludeFileNames": ["*Test*.ts", "*Mock*.ts"]
 }
