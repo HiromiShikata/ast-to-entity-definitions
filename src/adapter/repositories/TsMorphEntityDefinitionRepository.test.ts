@@ -15,13 +15,13 @@ describe('TsMorphEntityDefinitionRepository', () => {
   beforeEach(() => {
     repository = new TsMorphEntityDefinitionRepository();
   });
-  
+
   const getTestFiles = (directoryPath: string): string[] => {
     return readdirSync(directoryPath)
       .filter((file) => file.endsWith('.ts'))
       .map((file) => join(directoryPath, file));
   };
-  
+
   describe('find', () => {
     it('should return an array of EntityDefinition', async () => {
       const path = './testdata/src/domain/entities';

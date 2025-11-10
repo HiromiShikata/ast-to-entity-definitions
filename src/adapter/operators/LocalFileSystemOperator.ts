@@ -5,7 +5,7 @@ import { FileSystemOperator } from '../../domain/usecases/adapter-interfaces/Fil
 export class LocalFileSystemOperator implements FileSystemOperator {
   list(directoryPath: string): string[] {
     const stats = statSync(directoryPath);
-    
+
     if (!stats.isDirectory()) {
       throw new Error(`Path is not a directory: ${directoryPath}`);
     }

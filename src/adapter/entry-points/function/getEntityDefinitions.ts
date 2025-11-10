@@ -1,6 +1,4 @@
-import {
-  GetDefinitionByPathUseCase,
-} from '../../../domain/usecases/GetDefinitionByPathUseCase';
+import { GetDefinitionByPathUseCase } from '../../../domain/usecases/GetDefinitionByPathUseCase';
 import { TsMorphEntityDefinitionRepository } from '../../repositories/TsMorphEntityDefinitionRepository';
 import { LocalFileSystemOperator } from '../../operators/LocalFileSystemOperator';
 import { Configs } from '../../../domain/entities/Configs';

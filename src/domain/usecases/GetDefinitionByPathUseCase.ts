@@ -36,10 +36,7 @@ export class GetDefinitionByPathUseCase {
     );
   };
 
-  private filterFilesByPattern(
-    files: string[],
-    patterns?: string[],
-  ): string[] {
+  private filterFilesByPattern(files: string[], patterns?: string[]): string[] {
     if (!patterns || patterns.length === 0) {
       return files;
     }

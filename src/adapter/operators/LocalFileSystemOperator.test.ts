@@ -15,9 +15,7 @@ describe('LocalFileSystemOperator', () => {
 
       expect(result.length).toBeGreaterThan(0);
       expect(result.every((file) => file.endsWith('.ts'))).toBe(true);
-      expect(
-        result.some((file) => file.includes('User.ts')),
-      ).toBe(true);
+      expect(result.some((file) => file.includes('User.ts'))).toBe(true);
     });
 
     it('should return absolute paths', () => {
@@ -32,7 +30,7 @@ describe('LocalFileSystemOperator', () => {
 
     it('should throw error if path is not a directory', () => {
       const filePath = './testdata/src/domain/entities/User.ts';
-      
+
       expect(() => operator.list(filePath)).toThrow('Path is not a directory');
     });
   });

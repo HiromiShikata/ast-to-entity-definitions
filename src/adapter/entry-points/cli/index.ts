@@ -10,7 +10,7 @@ const isValidOptionsFile = (obj: unknown): obj is Configs => {
   if (typeof obj !== 'object' || obj === null) {
     return false;
   }
-  
+
   // Check excludeTypeNames if present
   if ('excludeTypeNames' in obj && obj.excludeTypeNames !== undefined) {
     if (!Array.isArray(obj.excludeTypeNames)) {

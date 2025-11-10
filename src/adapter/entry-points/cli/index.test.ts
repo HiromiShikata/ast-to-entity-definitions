@@ -398,6 +398,7 @@ describe('commander program', () => {
       excludeFileNames: ['*Admin*.ts', 'Item.ts'],
     });
     const configPath = './testdata/test-exclude-files-config.json';
+    // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     require('fs').writeFileSync(configPath, configContent);
 
     try {
@@ -421,6 +422,7 @@ describe('commander program', () => {
       expect(userEntity).toBeDefined();
     } finally {
       // Clean up
+      // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       require('fs').unlinkSync(configPath);
     }
   });

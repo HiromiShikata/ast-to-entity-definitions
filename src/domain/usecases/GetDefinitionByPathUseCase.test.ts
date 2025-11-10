@@ -9,9 +9,9 @@ describe('GetDefinitionByPathUseCase', () => {
       const expectedEntityDefinitions: EntityDefinition[] = [];
       const { useCase, entityDefinitionRepository, fileSystemOperator } =
         createUseCaseAndMockRepositories();
-      
+
       fileSystemOperator.list.mockReturnValue([]);
-      
+
       const result = await useCase.run(directoryPath);
 
       expect(result).toEqual(expectedEntityDefinitions);
@@ -273,11 +273,14 @@ describe('GetDefinitionByPathUseCase', () => {
       ];
       const { useCase, entityDefinitionRepository, fileSystemOperator } =
         createUseCaseAndMockRepositories();
-      
-      const mockFiles = ['/example/directory/path/User.ts', '/example/directory/path/Group.ts'];
+
+      const mockFiles = [
+        '/example/directory/path/User.ts',
+        '/example/directory/path/Group.ts',
+      ];
       fileSystemOperator.list.mockReturnValue(mockFiles);
       entityDefinitionRepository.find.mockResolvedValueOnce(entityDefinitions);
-      
+
       const result = await useCase.run(directoryPath);
 
       expect(result).toEqual(expectedEntityDefinitions);
@@ -351,8 +354,12 @@ describe('GetDefinitionByPathUseCase', () => {
 
       const { useCase, entityDefinitionRepository, fileSystemOperator } =
         createUseCaseAndMockRepositories();
-      
-      const mockFiles = ['/example/directory/path/User.ts', '/example/directory/path/Group.ts', '/example/directory/path/UserGroup.ts'];
+
+      const mockFiles = [
+        '/example/directory/path/User.ts',
+        '/example/directory/path/Group.ts',
+        '/example/directory/path/UserGroup.ts',
+      ];
       fileSystemOperator.list.mockReturnValue(mockFiles);
       entityDefinitionRepository.find.mockResolvedValueOnce(
         allEntityDefinitions,
@@ -401,8 +408,11 @@ describe('GetDefinitionByPathUseCase', () => {
 
       const { useCase, entityDefinitionRepository, fileSystemOperator } =
         createUseCaseAndMockRepositories();
-      
-      const mockFiles = ['/example/directory/path/User.ts', '/example/directory/path/Group.ts'];
+
+      const mockFiles = [
+        '/example/directory/path/User.ts',
+        '/example/directory/path/Group.ts',
+      ];
       fileSystemOperator.list.mockReturnValue(mockFiles);
       entityDefinitionRepository.find.mockResolvedValueOnce(
         allEntityDefinitions,
@@ -538,7 +548,7 @@ describe('GetDefinitionByPathUseCase', () => {
   };
   const createMockFileSystemOperator = () => {
     return {
-      list: jest.fn((_directoryPath: string) => [] as string[]),
+      list: jest.fn((_directoryPath: string): string[] => []),
     };
   };
 });
