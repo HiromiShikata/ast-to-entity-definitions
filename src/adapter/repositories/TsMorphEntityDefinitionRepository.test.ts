@@ -604,4 +604,56 @@ describe('TsMorphEntityDefinitionRepository', () => {
       },
     );
   });
+
+  describe('find - project state management', () => {
+    it('should not accumulate files from previous calls', async () => {
+      // First call with two files
+      const firstPath = './testdata/src/domain/entities';
+      const firstFiles = getTestFiles(firstPath);
+      const firstResult = await repository.find(firstFiles);
+      const firstResultCount = firstResult.length;
+
+      // Second call with only one file
+      const secondFiles = [firstFiles[0]];
+      const secondResult = await repository.find(secondFiles);
+
+      // Second result should only contain entities from the single file
+      // If project state is not reset, it would contain all files from first call
+      expect(secondResult.length).toBeLessThan(firstResultCount);
+      expect(secondResult.length).toBeGreaterThan(0);
+    });
+
+    it('should return empty array when given empty file list', async () => {
+      // First call with files to populate project
+      const path = './testdata/src/domain/entities';
+      const files = getTestFiles(path);
+      await repository.find(files);
+
+      // Second call with empty list should return empty array
+      const result = await repository.find([]);
+      expect(result).toEqual([]);
+    });
+
+    it('should handle multiple consecutive calls correctly', async () => {
+      const path = './testdata/src/domain/entities';
+      const allFiles = getTestFiles(path);
+
+      // Call 1: All files
+      const result1 = await repository.find(allFiles);
+      const count1 = result1.length;
+
+      // Call 2: Subset of files
+      const subsetFiles = allFiles.slice(0, 2);
+      const result2 = await repository.find(subsetFiles);
+      const count2 = result2.length;
+
+      // Call 3: All files again
+      const result3 = await repository.find(allFiles);
+      const count3 = result3.length;
+
+      // Results should be consistent based on input
+      expect(count2).toBeLessThan(count1);
+      expect(count3).toBe(count1);
+    });
+  });
 });

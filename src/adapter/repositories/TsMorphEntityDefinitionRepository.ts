@@ -33,6 +33,13 @@ export class TsMorphEntityDefinitionRepository
   }
 
   async find(filePaths: string[]): Promise<EntityDefinition[]> {
+    // Reset project to avoid accumulating files from previous calls
+    this.project.getSourceFiles().forEach((sourceFile) => sourceFile.forget());
+
+    if (filePaths.length === 0) {
+      return [];
+    }
+
     for (const filePath of filePaths) {
       this.project.addSourceFileAtPath(filePath);
     }
