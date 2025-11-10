@@ -391,4 +391,37 @@ describe('commander program', () => {
     const itemEntity = parsedOutput.find((entity) => entity.name === 'Item');
     expect(itemEntity).toBeDefined();
   });
+
+  it('should exclude files matching excludeFileNames patterns in config', () => {
+    // Create a temporary config file for testing
+    const configContent = JSON.stringify({
+      excludeFileNames: ['*Admin*.ts', 'Item.ts'],
+    });
+    const configPath = './testdata/test-exclude-files-config.json';
+    require('fs').writeFileSync(configPath, configContent);
+
+    try {
+      const output = execSync(
+        `npx ts-node ./src/adapter/entry-points/cli/index.ts ./testdata/src/domain/entities --config ${configPath}`,
+      ).toString();
+
+      const parsedOutput = JSON.parse(output) as EntityDefinition[]; // eslint-disable-line no-type-assertion/no-type-assertion
+
+      // Administrator and Item should be excluded
+      const administratorEntity = parsedOutput.find(
+        (entity) => entity.name === 'Administrator',
+      );
+      expect(administratorEntity).toBeUndefined();
+
+      const itemEntity = parsedOutput.find((entity) => entity.name === 'Item');
+      expect(itemEntity).toBeUndefined();
+
+      // Other entities should still be present
+      const userEntity = parsedOutput.find((entity) => entity.name === 'User');
+      expect(userEntity).toBeDefined();
+    } finally {
+      // Clean up
+      require('fs').unlinkSync(configPath);
+    }
+  });
 });

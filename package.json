@@ -63,7 +63,9 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
+    "@types/minimatch": "^5.1.2",
     "commander": "^14.0.0",
+    "minimatch": "^10.1.1",
     "rimraf": "^6.0.0",
     "ts-morph": "^27.0.0"
   }

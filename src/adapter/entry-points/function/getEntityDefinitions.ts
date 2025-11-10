@@ -1,15 +1,17 @@
 import {
   GetDefinitionByPathUseCase,
-  GetDefinitionByPathOptions,
 } from '../../../domain/usecases/GetDefinitionByPathUseCase';
 import { TsMorphEntityDefinitionRepository } from '../../repositories/TsMorphEntityDefinitionRepository';
+import { LocalFileSystemOperator } from '../../operators/LocalFileSystemOperator';
+import { Configs } from '../../../domain/entities/Configs';
 
 export const getEntityDefinitions = (
   directoryPath: string,
-  options?: GetDefinitionByPathOptions,
+  configs?: Configs,
 ) => {
   const useCase = new GetDefinitionByPathUseCase(
     new TsMorphEntityDefinitionRepository(),
+    new LocalFileSystemOperator(),
   );
-  return useCase.run(directoryPath, options);
+  return useCase.run(directoryPath, configs);
 };

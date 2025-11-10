@@ -2,24 +2,31 @@
 import { Command } from 'commander';
 import { GetDefinitionByPathUseCase } from '../../../domain/usecases/GetDefinitionByPathUseCase';
 import { TsMorphEntityDefinitionRepository } from '../../repositories/TsMorphEntityDefinitionRepository';
+import { LocalFileSystemOperator } from '../../operators/LocalFileSystemOperator';
 import { readFileSync } from 'fs';
+import { Configs } from '../../../domain/entities/Configs';
 
-type ConfigFile = {
-  excludeTypeNames?: string[];
-};
-
-const isValidConfigFile = (obj: unknown): obj is ConfigFile => {
+const isValidOptionsFile = (obj: unknown): obj is Configs => {
   if (typeof obj !== 'object' || obj === null) {
     return false;
   }
-  if (!('excludeTypeNames' in obj)) {
-    return false;
-  }
-  if (obj.excludeTypeNames !== undefined) {
+  
+  // Check excludeTypeNames if present
+  if ('excludeTypeNames' in obj && obj.excludeTypeNames !== undefined) {
     if (!Array.isArray(obj.excludeTypeNames)) {
       return false;
     }
     if (!obj.excludeTypeNames.every((item) => typeof item === 'string')) {
+      return false;
+    }
+  }
+
+  // Check excludeFileNames if present
+  if ('excludeFileNames' in obj && obj.excludeFileNames !== undefined) {
+    if (!Array.isArray(obj.excludeFileNames)) {
+      return false;
+    }
+    if (!obj.excludeFileNames.every((item) => typeof item === 'string')) {
       return false;
     }
   }
@@ -36,16 +43,16 @@ program
     'Get entity definitions and relation definitions from types of TypeScript in src directory',
   )
   .action(async (path: string, options: { config?: string }) => {
-    let configFile: ConfigFile | undefined;
+    let configFile: Configs | undefined;
 
     if (options.config) {
       try {
         const configContent = readFileSync(options.config, 'utf-8');
         const parsedConfig = JSON.parse(configContent) as unknown;
 
-        if (!isValidConfigFile(parsedConfig)) {
+        if (!isValidOptionsFile(parsedConfig)) {
           console.error(
-            'Error: Invalid configuration file format. Expected format: { excludeTypeNames?: string[] }',
+            'Error: Invalid configuration file format. Expected format: { excludeTypeNames?: string[], excludeFileNames?: string[] }',
           );
           process.exit(1);
         }
@@ -63,6 +70,7 @@ program
 
     const useCase = new GetDefinitionByPathUseCase(
       new TsMorphEntityDefinitionRepository(),
+      new LocalFileSystemOperator(),
     );
     const res = await useCase.run(path, configFile);
     console.log(JSON.stringify(res));

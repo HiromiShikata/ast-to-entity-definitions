@@ -6,16 +6,27 @@ import {
 } from './TsMorphEntityDefinitionRepository';
 import { EntityDefinition } from '../../domain/entities/EntityDefinition';
 
+import { readdirSync } from 'fs';
+import { join } from 'path';
+
 describe('TsMorphEntityDefinitionRepository', () => {
   let repository: TsMorphEntityDefinitionRepository;
 
   beforeEach(() => {
     repository = new TsMorphEntityDefinitionRepository();
   });
+  
+  const getTestFiles = (directoryPath: string): string[] => {
+    return readdirSync(directoryPath)
+      .filter((file) => file.endsWith('.ts'))
+      .map((file) => join(directoryPath, file));
+  };
+  
   describe('find', () => {
     it('should return an array of EntityDefinition', async () => {
       const path = './testdata/src/domain/entities';
-      const result = await repository.find(path);
+      const files = getTestFiles(path);
+      const result = await repository.find(files);
 
       expect(result).toEqual<EntityDefinition[]>([
         {
@@ -361,7 +372,8 @@ describe('TsMorphEntityDefinitionRepository', () => {
 
     it('spits error', async () => {
       const path = './testdata/src/domain/errors';
-      await expect(repository.find(path)).rejects.toThrow(
+      const files = getTestFiles(path);
+      await expect(repository.find(files)).rejects.toThrow(
         "Union types are not the same for property: invalidUnion: 'hoge' | 10;, types: string, number",
       );
     });
@@ -369,7 +381,8 @@ describe('TsMorphEntityDefinitionRepository', () => {
     // 追加: 判別子 Foo['type'] から acceptableValues を抽出できること
     it("extracts acceptableValues from discriminant via Foo['type']", async () => {
       const path = './testdata/src/domain/type_reference/Discriminant.ts';
-      const result = await repository.find(path);
+      const files = [path];
+      const result = await repository.find(files);
 
       const msg = result.find((e) => e.name === 'Discriminant');
       if (!msg) {
@@ -445,7 +458,8 @@ describe('TsMorphEntityDefinitionRepository', () => {
 
     it('flattens intersection/extends for UsecaseTable* types', async () => {
       const path = './testdata/src/domain/type_reference/Intersection.ts';
-      const result = await repository.find(path);
+      const files = [path];
+      const result = await repository.find(files);
 
       expect(result).toEqual([
         {

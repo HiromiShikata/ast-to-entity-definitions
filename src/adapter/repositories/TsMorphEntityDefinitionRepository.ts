@@ -1,7 +1,6 @@
 // ./src/adapter/repositories/TsMorphEntityDefinitionRepository.ts
 import * as ts from 'ts-morph';
 import { Node, SyntaxKind } from 'ts-morph';
-import { readdirSync, statSync } from 'fs';
 import { EntityDefinition } from '../../domain/entities/EntityDefinition';
 import { EntityDefinitionRepository } from '../../domain/usecases/adapter-interfaces/EntityDefinitionRepository';
 import {
@@ -33,18 +32,9 @@ export class TsMorphEntityDefinitionRepository
     this.project = new ts.Project();
   }
 
-  async find(path: string): Promise<EntityDefinition[]> {
-    const stats = statSync(path);
-    if (stats.isDirectory()) {
-      const files = readdirSync(path).filter((file) => file.endsWith('.ts'));
-      for (const file of files) {
-        const filePath = `${path}/${file}`;
-        this.project.addSourceFileAtPath(filePath);
-      }
-    } else if (stats.isFile() && path.endsWith('.ts')) {
-      this.project.addSourceFileAtPath(path);
-    } else {
-      throw new Error('Invalid path');
+  async find(filePaths: string[]): Promise<EntityDefinition[]> {
+    for (const filePath of filePaths) {
+      this.project.addSourceFileAtPath(filePath);
     }
 
     const targets = this.project
