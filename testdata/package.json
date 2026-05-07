@@ -28,6 +28,6 @@
   "homepage": "https://github.com/HiromiShikata/ast-to-entity-definitions#readme",
   "devDependencies": {
     "ast-to-entity-definitions": "file:..",
-    "typescript": "^5.0.0"
+    "typescript": "^6.0.0"
   }
 }
