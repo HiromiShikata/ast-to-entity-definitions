@@ -9,5 +9,6 @@ reports
 dist
 *.map
 .npmignore
+.npmrc
 CHANGELOG.md
 CODEOWNERS
