@@ -8,7 +8,7 @@ describe('commander program', () => {
     ).toString();
 
     // output should be parsed as JSON
-    const parsedOutput = JSON.parse(output) as EntityDefinition[]; // eslint-disable-line no-type-assertion/no-type-assertion
+    const parsedOutput = JSON.parse(output) as EntityDefinition[]; // eslint-disable-line @typescript-eslint/consistent-type-assertions
     expect(parsedOutput).toEqual<EntityDefinition[]>([
       {
         name: 'Administrator',
@@ -356,7 +356,7 @@ describe('commander program', () => {
       'npx ts-node ./src/adapter/entry-points/cli/index.ts ./testdata/src/domain/entities --config ./testdata/ast-to-entity-definitions.json',
     ).toString();
 
-    const parsedOutput = JSON.parse(output) as EntityDefinition[]; // eslint-disable-line no-type-assertion/no-type-assertion
+    const parsedOutput = JSON.parse(output) as EntityDefinition[]; // eslint-disable-line @typescript-eslint/consistent-type-assertions
 
     // Administrator and Item types should be excluded based on config file
     const administratorEntity = parsedOutput.find(
@@ -380,7 +380,7 @@ describe('commander program', () => {
       'npx ts-node ./src/adapter/entry-points/cli/index.ts ./testdata/src/domain/entities',
     ).toString();
 
-    const parsedOutput = JSON.parse(output) as EntityDefinition[]; // eslint-disable-line no-type-assertion/no-type-assertion
+    const parsedOutput = JSON.parse(output) as EntityDefinition[]; // eslint-disable-line @typescript-eslint/consistent-type-assertions
 
     // All entities should be present
     const administratorEntity = parsedOutput.find(
@@ -406,7 +406,7 @@ describe('commander program', () => {
         `npx ts-node ./src/adapter/entry-points/cli/index.ts ./testdata/src/domain/entities --config ${configPath}`,
       ).toString();
 
-      const parsedOutput = JSON.parse(output) as EntityDefinition[]; // eslint-disable-line no-type-assertion/no-type-assertion
+      const parsedOutput = JSON.parse(output) as EntityDefinition[]; // eslint-disable-line @typescript-eslint/consistent-type-assertions
 
       // Administrator and Item should be excluded
       const administratorEntity = parsedOutput.find(
