@@ -2,6 +2,7 @@
 .gitignore
 .prettierignore
 .gitkeep
+.gitleaks.toml
 
 
 .idea

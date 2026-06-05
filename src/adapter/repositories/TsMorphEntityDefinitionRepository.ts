@@ -23,9 +23,7 @@ export type PropertyTypeDeclaration = {
   typeText: string;
 };
 
-export class TsMorphEntityDefinitionRepository
-  implements EntityDefinitionRepository
-{
+export class TsMorphEntityDefinitionRepository implements EntityDefinitionRepository {
   private readonly project: ts.Project;
 
   constructor() {
@@ -265,7 +263,7 @@ export class TsMorphEntityDefinitionRepository
     if (!typeDeclaration.isKind(SyntaxKind.TypeReference)) return null;
     const typeArgumentNode =
       typeDeclaration?.getChildCount() > 0
-        ? typeDeclaration?.getTypeArguments()?.[0] ?? null
+        ? (typeDeclaration?.getTypeArguments()?.[0] ?? null)
         : null;
     if (!typeArgumentNode) return null;
     const typeNameText = typeDeclaration.getTypeName().getText();
@@ -321,18 +319,18 @@ export class TsMorphEntityDefinitionRepository
             return this.getPropertyTypeDeclarationRecursively(t);
           })
         : targetTypeDeclaration.isKind(SyntaxKind.LiteralType)
-        ? [
-            {
-              annotationText: null,
-              indexedAccess: null,
-              isArray: false,
-              arrayElement: null,
-              node: targetTypeDeclaration,
-              typeText: targetTypeDeclaration.getText(),
-              union: null,
-            },
-          ]
-        : [],
+          ? [
+              {
+                annotationText: null,
+                indexedAccess: null,
+                isArray: false,
+                arrayElement: null,
+                node: targetTypeDeclaration,
+                typeText: targetTypeDeclaration.getText(),
+                union: null,
+              },
+            ]
+          : [],
     );
 
     const typeText = targetTypeDeclaration.getText();
