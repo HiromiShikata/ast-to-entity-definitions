@@ -12,3 +12,5 @@ dist
 .npmrc
 CHANGELOG.md
 CODEOWNERS
+.gitleaks.toml
+*.toml
