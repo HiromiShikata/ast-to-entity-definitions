@@ -24,9 +24,8 @@ export class GetDefinitionByPathUseCase {
     );
 
     // 3. Get entity definitions from filtered files
-    const entityDefinitions = await this.entityDefinitionRepository.find(
-      filteredFiles,
-    );
+    const entityDefinitions =
+      await this.entityDefinitionRepository.find(filteredFiles);
 
     // 4. Filter by excludeTypeNames
     return entityDefinitions.filter(
