@@ -57,7 +57,8 @@ jobs:
          contains(github.event.comment.body, '/done') ||
          contains(github.event.comment.body, '/movenextactiondateto') ||
          contains(github.event.comment.body, '/changeassignee ')))) &&
-      github.event.action != 'labeled'
+      github.event.action != 'labeled' &&
+      github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: step-security/harden-runner@v2
