@@ -57,8 +57,7 @@ jobs:
          contains(github.event.comment.body, '/done') ||
          contains(github.event.comment.body, '/movenextactiondateto') ||
          contains(github.event.comment.body, '/changeassignee ')))) &&
-      github.event.action != 'labeled' &&
-      github.actor != 'dependabot[bot]'
+      github.event.action != 'labeled'
     runs-on: ubuntu-latest
     steps:
       - uses: step-security/harden-runner@v2
@@ -276,8 +275,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Check linked issues in pull requests
     if: >-
-      (github.event_name == 'pull_request') &&
-      github.actor != 'dependabot[bot]'
+      (github.event_name == 'pull_request')
     steps:
       - uses: step-security/harden-runner@v2
         with:
