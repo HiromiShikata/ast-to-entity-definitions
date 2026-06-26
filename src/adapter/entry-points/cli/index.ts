@@ -49,7 +49,7 @@ const main = async (): Promise<void> => {
       if (options.config) {
         try {
           const configContent = readFileSync(options.config, 'utf-8');
-          const parsedConfig = JSON.parse(configContent) as unknown;
+          const parsedConfig: unknown = JSON.parse(configContent);
 
           if (!isValidOptionsFile(parsedConfig)) {
             console.error(
