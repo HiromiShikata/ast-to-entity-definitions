@@ -1,4 +1,5 @@
 import { execSync } from 'child_process';
+import { writeFileSync, unlinkSync } from 'fs';
 import { EntityDefinition } from '../function';
 
 describe('commander program', () => {
@@ -7,9 +8,7 @@ describe('commander program', () => {
       'npx ts-node ./src/adapter/entry-points/cli/index.ts ./testdata/src/domain/entities',
     ).toString();
 
-    // output should be parsed as JSON
-    const parsedOutput = JSON.parse(output) as EntityDefinition[]; // eslint-disable-line @typescript-eslint/consistent-type-assertions
-    expect(parsedOutput).toEqual<EntityDefinition[]>([
+    expect(JSON.parse(output)).toEqual<EntityDefinition[]>([
       {
         name: 'Administrator',
         properties: [
@@ -356,23 +355,20 @@ describe('commander program', () => {
       'npx ts-node ./src/adapter/entry-points/cli/index.ts ./testdata/src/domain/entities --config ./testdata/ast-to-entity-definitions.json',
     ).toString();
 
-    const parsedOutput = JSON.parse(output) as EntityDefinition[]; // eslint-disable-line @typescript-eslint/consistent-type-assertions
+    const parsed: unknown = JSON.parse(output);
 
-    // Administrator and Item types should be excluded based on config file
-    const administratorEntity = parsedOutput.find(
-      (entity) => entity.name === 'Administrator',
+    expect(parsed).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ name: 'Administrator' })]),
     );
-    expect(administratorEntity).toBeUndefined();
-
-    const itemEntity = parsedOutput.find((entity) => entity.name === 'Item');
-    expect(itemEntity).toBeUndefined();
-
-    // Other entities should still be present
-    const userEntity = parsedOutput.find((entity) => entity.name === 'User');
-    expect(userEntity).toBeDefined();
-
-    const groupEntity = parsedOutput.find((entity) => entity.name === 'Group');
-    expect(groupEntity).toBeDefined();
+    expect(parsed).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ name: 'Item' })]),
+    );
+    expect(parsed).toEqual(
+      expect.arrayContaining([expect.objectContaining({ name: 'User' })]),
+    );
+    expect(parsed).toEqual(
+      expect.arrayContaining([expect.objectContaining({ name: 'Group' })]),
+    );
   });
 
   it('should work without config file (backward compatibility)', () => {
@@ -380,50 +376,41 @@ describe('commander program', () => {
       'npx ts-node ./src/adapter/entry-points/cli/index.ts ./testdata/src/domain/entities',
     ).toString();
 
-    const parsedOutput = JSON.parse(output) as EntityDefinition[]; // eslint-disable-line @typescript-eslint/consistent-type-assertions
+    const parsed: unknown = JSON.parse(output);
 
-    // All entities should be present
-    const administratorEntity = parsedOutput.find(
-      (entity) => entity.name === 'Administrator',
+    expect(parsed).toEqual(
+      expect.arrayContaining([expect.objectContaining({ name: 'Administrator' })]),
     );
-    expect(administratorEntity).toBeDefined();
-
-    const itemEntity = parsedOutput.find((entity) => entity.name === 'Item');
-    expect(itemEntity).toBeDefined();
+    expect(parsed).toEqual(
+      expect.arrayContaining([expect.objectContaining({ name: 'Item' })]),
+    );
   });
 
   it('should exclude files matching excludeFileNames patterns in config', () => {
-    // Create a temporary config file for testing
     const configContent = JSON.stringify({
       excludeFileNames: ['*Admin*.ts', 'Item.ts'],
     });
     const configPath = './testdata/test-exclude-files-config.json';
-    // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    require('fs').writeFileSync(configPath, configContent);
+    writeFileSync(configPath, configContent);
 
     try {
       const output = execSync(
         `npx ts-node ./src/adapter/entry-points/cli/index.ts ./testdata/src/domain/entities --config ${configPath}`,
       ).toString();
 
-      const parsedOutput = JSON.parse(output) as EntityDefinition[]; // eslint-disable-line @typescript-eslint/consistent-type-assertions
+      const parsed: unknown = JSON.parse(output);
 
-      // Administrator and Item should be excluded
-      const administratorEntity = parsedOutput.find(
-        (entity) => entity.name === 'Administrator',
+      expect(parsed).not.toEqual(
+        expect.arrayContaining([expect.objectContaining({ name: 'Administrator' })]),
       );
-      expect(administratorEntity).toBeUndefined();
-
-      const itemEntity = parsedOutput.find((entity) => entity.name === 'Item');
-      expect(itemEntity).toBeUndefined();
-
-      // Other entities should still be present
-      const userEntity = parsedOutput.find((entity) => entity.name === 'User');
-      expect(userEntity).toBeDefined();
+      expect(parsed).not.toEqual(
+        expect.arrayContaining([expect.objectContaining({ name: 'Item' })]),
+      );
+      expect(parsed).toEqual(
+        expect.arrayContaining([expect.objectContaining({ name: 'User' })]),
+      );
     } finally {
-      // Clean up
-      // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-      require('fs').unlinkSync(configPath);
+      unlinkSync(configPath);
     }
   });
 });
