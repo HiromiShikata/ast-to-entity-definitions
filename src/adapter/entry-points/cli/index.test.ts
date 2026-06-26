@@ -358,7 +358,9 @@ describe('commander program', () => {
     const parsed: unknown = JSON.parse(output);
 
     expect(parsed).not.toEqual(
-      expect.arrayContaining([expect.objectContaining({ name: 'Administrator' })]),
+      expect.arrayContaining([
+        expect.objectContaining({ name: 'Administrator' }),
+      ]),
     );
     expect(parsed).not.toEqual(
       expect.arrayContaining([expect.objectContaining({ name: 'Item' })]),
@@ -379,7 +381,9 @@ describe('commander program', () => {
     const parsed: unknown = JSON.parse(output);
 
     expect(parsed).toEqual(
-      expect.arrayContaining([expect.objectContaining({ name: 'Administrator' })]),
+      expect.arrayContaining([
+        expect.objectContaining({ name: 'Administrator' }),
+      ]),
     );
     expect(parsed).toEqual(
       expect.arrayContaining([expect.objectContaining({ name: 'Item' })]),
@@ -401,7 +405,9 @@ describe('commander program', () => {
       const parsed: unknown = JSON.parse(output);
 
       expect(parsed).not.toEqual(
-        expect.arrayContaining([expect.objectContaining({ name: 'Administrator' })]),
+        expect.arrayContaining([
+          expect.objectContaining({ name: 'Administrator' }),
+        ]),
       );
       expect(parsed).not.toEqual(
         expect.arrayContaining([expect.objectContaining({ name: 'Item' })]),
