@@ -618,9 +618,7 @@ export class TsMorphEntityDefinitionRepository implements EntityDefinitionReposi
     if (!root) return null;
 
     const members: (
-      | ts.TypeLiteralNode
-      | ts.TypeAliasDeclaration
-      | ts.InterfaceDeclaration
+      ts.TypeLiteralNode | ts.TypeAliasDeclaration | ts.InterfaceDeclaration
     )[] = [];
 
     if (Node.isTypeAliasDeclaration(root)) {
