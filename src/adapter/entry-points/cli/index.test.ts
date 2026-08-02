@@ -5,7 +5,7 @@ import { EntityDefinition } from '../function';
 describe('commander program', () => {
   it('should output file contents', () => {
     const output = execSync(
-      'npx ts-node ./src/adapter/entry-points/cli/index.ts ./testdata/src/domain/entities',
+      'npx tsx ./src/adapter/entry-points/cli/index.ts ./testdata/src/domain/entities',
     ).toString();
 
     expect(JSON.parse(output)).toEqual<EntityDefinition[]>([
@@ -352,7 +352,7 @@ describe('commander program', () => {
 
   it('should exclude types specified in config file', () => {
     const output = execSync(
-      'npx ts-node ./src/adapter/entry-points/cli/index.ts ./testdata/src/domain/entities --config ./testdata/ast-to-entity-definitions.json',
+      'npx tsx ./src/adapter/entry-points/cli/index.ts ./testdata/src/domain/entities --config ./testdata/ast-to-entity-definitions.json',
     ).toString();
 
     const parsed: unknown = JSON.parse(output);
@@ -375,7 +375,7 @@ describe('commander program', () => {
 
   it('should work without config file (backward compatibility)', () => {
     const output = execSync(
-      'npx ts-node ./src/adapter/entry-points/cli/index.ts ./testdata/src/domain/entities',
+      'npx tsx ./src/adapter/entry-points/cli/index.ts ./testdata/src/domain/entities',
     ).toString();
 
     const parsed: unknown = JSON.parse(output);
@@ -399,7 +399,7 @@ describe('commander program', () => {
 
     try {
       const output = execSync(
-        `npx ts-node ./src/adapter/entry-points/cli/index.ts ./testdata/src/domain/entities --config ${configPath}`,
+        `npx tsx ./src/adapter/entry-points/cli/index.ts ./testdata/src/domain/entities --config ${configPath}`,
       ).toString();
 
       const parsed: unknown = JSON.parse(output);
