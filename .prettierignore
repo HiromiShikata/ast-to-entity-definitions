@@ -15,3 +15,4 @@ CHANGELOG.md
 CODEOWNERS
 .gitleaks.toml
 *.toml
+*.sh
