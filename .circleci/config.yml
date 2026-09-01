@@ -15,6 +15,7 @@ jobs:
       - run: npx commitlint --from=main
       - run: npm run build
       - run: npm run test
+      - run: bash scripts/enable-auto-merge-error-handler.test.sh
       - store_test_results:
           path: reports/jest-junit
       - store_artifacts:
