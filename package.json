@@ -5,7 +5,7 @@
   "main": "bin/adapter/entry-points/function/index.js",
   "types": "bin/adapter/entry-points/function/index.d.ts",
   "scripts": {
-    "prettier": "prettier --write '**/*'",
+    "prettier": "prettier --write --ignore-unknown '**/*'",
     "lint": "eslint src",
     "lint-fix": "eslint src --fix",
     "format": "npm run prettier && npm run lint-fix",
