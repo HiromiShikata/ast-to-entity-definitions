@@ -30,6 +30,12 @@ jobs:
       - name: Build package
         run: npm run build
 
+      - name: Upload built package
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: npm-package-bin
+          path: bin
+
   publish:
     needs: build
     runs-on: ubuntu-latest
@@ -53,11 +59,14 @@ jobs:
       - name: Install npm for trusted publishing
         run: npm install -g npm@^11.5.1 && npm --version
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Download built package
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: npm-package-bin
+          path: bin
 
-      - name: Build package
-        run: npm run build
+      - name: Install release tooling without lifecycle scripts
+        run: npm ci --ignore-scripts
 
       - run: git config --global user.email "gh-actions"
       - run: git config --global user.name "gh-actions"
